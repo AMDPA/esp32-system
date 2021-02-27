@@ -132,7 +132,7 @@ git pull
 
 Pode ocorrer conflitos e o Git não conseguir unir os dados automaticamente. Será preciso que você resolva os conflitos.
 
-Ao fim do trabalho, sincronize com o Braço principal.
+Ao fim do trabalho, sincronize com o Braço principal. Depois de analisada será submetida ao braço principal.
 
 ```sh
 git merge origin/main
