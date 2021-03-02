@@ -1,46 +1,56 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include "classes/TempSolo.h"
-#include "classes/UmidSolo.h"
-#include "classes/TempUmidAr.h"
-#include "classes/Hidrogenio.h"
-#include "classes/Chuva.h"
-#include "classes/Cjmcu.h"
+
+#include "esp32/Energia.h"
+#include "esp32/Hora.h"
+
 #include "classes/Luminosidade.h"
+#include "classes/TempUmidAr.h"
+#include "classes/LeitorCartao.h"
 #include "classes/Ph.h"
 
-TempSolo tempsolo;
-UmidSolo umidSolo;
-TempUmidAr tempUmidAr;
-Hidrogenio hidrogenio;
-Cjmcu cjmcu;
-Chuva chuva;
-Luminosidade l;
+#include <SPI.h>
+#include <FS.h>
+#include <SD.h>
 
-void setup() {
- Serial.begin(115200);
+/*Luminosidade l;
+TempUmidAr um;
+//LeitorCartao aa;
+//Ph h;
 
-  //tempsolo = TempSolo(4);
-  cjmcu = Cjmcu();
-  umidSolo = UmidSolo(15);
-  tempUmidAr = TempUmidAr();
-  hidrogenio = Hidrogenio();
-  chuva = Chuva();
+void setup(){
+  delay(10000);
+  Serial.begin(115200);
   l = Luminosidade();
-
- 
+  um = TempUmidAr();
+  //aa = LeitorCartao();
+  h = Ph();
 }
 
-void loop() {
-  //tempsolo.Update();
-  cjmcu.Update();
-  umidSolo.Update();
-  tempUmidAr.Update();
-  hidrogenio.Update();
-  chuva.Update();
-  l.Update();
+void loop(){
+//l.Update();
+//um.Update();
+//delay(2000); 
+//aa.writeFile(SD, "/data.txt", "Reading ID, Date, Hour, Temperature \r\n");
+h.Update();
+}*/
 
-  delay(2000);
-  Serial.println("------------------------------------");
+#include <WiFi.h>
+
+LeitorCartao l;
+void setup(){
+  //l = LeitorCartao();
+  Serial.begin(115200);
   
+}
+
+void loop(){
+int adcValue = analogRead(25);
+  float phVoltag = (float) adcValue * (3.3 / 4095);
+  Serial.print("ADC = "); Serial.println(adcValue);
+  Serial.print("Po = "); Serial.println(phVoltag);
+
+  String dataMe;
+  dataMe = String(adcValue) + ", " + String(phVoltag) + ", \r\n"; 
+  l.appendFile(SD, "/datalog_ESP32.txt", dataMe.c_str());
+  delay(5000);
 }
