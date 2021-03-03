@@ -15,7 +15,7 @@ private:
     struct tm data;
 
 public:
-    Hora(){}
+    Hora();
 
     //Setar valor de data atraves de int UnixTime
     void setData(int unixTimeStamp)
@@ -41,7 +41,7 @@ public:
             data = *gmtime(&tt);
         
             char data_formatada[64];
-            strftime(data_formatada, 64, "%d/%m/%Y %H:%M:%S", &data);
+            strftime(data_formatada, 64, "%Y-%m-%d %H:%M:%S", &data);
             return data_formatada;
         }
     

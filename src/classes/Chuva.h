@@ -1,16 +1,17 @@
-///
-///
-///Configurations: 
-/// - Pino: 34
-/// - Voltagem: 3.3v
-///
-///
+/*
+ Chuva.h - Arquivo incluso no projeto ÀMDPA - 2021
 
-
-#include <Arduino.h>
+ Configurações (Padrão):
+  - VCC  ---> 3V3
+  - GND  ---> GND
+  - A0   ---> GPIO 34
+  - D0   ---> 
+*/
 
 #ifndef Chuva_h
 #define Chuva_h
+
+#include <Arduino.h>
 
 #define PIN 34
 class Chuva

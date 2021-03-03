@@ -1,6 +1,18 @@
+/*
+ LeitorCartao.h - Arquivo incluso no projeto ÀMDPA - 2021
+
+ Configurações (Padrão):
+  - CS   ---> GPIO 5
+  - SCK  ---> GPIO 18
+  - MOSI ---> GPIO 23
+  - MISO ---> GPIO 19
+  - VCC  ---> 5V ou 3V3
+  - GND  ---> GND
+*/
+
 #ifndef LeitorCartao_h
 #define LeitorCartao_h
-
+           
 #include <Arduino.h>
 #include <FS.h>
 #include <SD.h>
@@ -9,54 +21,92 @@
 #define SD_CS 5
 class LeitorCartao
 {
-private:
-    String dataMessage;
-public:
-    LeitorCartao()
-    {
-        while(!SD.begin(SD_CS)){
-          Serial.println("Card Mount Failed");
-          delay(5000);
-        }
 
-      writeFile(SD, "/datalog_ESP32.txt", "Time, Humidity, Temperature \r\n");
-   
+public:
+  /// Construtor padrão, GPIO ---> 5
+  LeitorCartao(){
+    initSdCard();
+  }
+
+  /// Construtor, Definir GPIO
+  LeitorCartao(uint8_t ssPin){
+    initSdCard(ssPin);
+  }
+
+private:
+  /// Inicializar SDCard
+  bool initSdCard(uint8_t ssPin = SD_CS){
+    int cont = 0;
+    while (!SD.begin(ssPin))
+      {
+        Serial.println("Não foi possivel montar o SDCard");
+        Serial.println("Tentando novamente");
+        
+        if(cont > 10){
+          Serial.println("\nMáximo de Tentativas alcançado!");
+          break;
+          return false;  
+        }
+        cont++;
+        delay(1000);
+      }
+    return true;
+  }
+
+public:
+  /// Criar Arquivo em SDCard
+  bool criarArquivo(const char * path){
+    Serial.printf("Criando arquivo: %s\n", path);
+    File file = SD.open(path, FILE_WRITE);
+  
+    if(!file) {
+      Serial.println("Não foi possivel criar o arquivo.");
+      
+      file.close();
+      return false;
     }
 
-// Write to the SD card (DON'T MODIFY THIS FUNCTION)
-void writeFile(fs::FS &fs, const char * path, const char * message) {
-  Serial.printf("Writing file: %s\n", path);
+    file.close();
+    return true; 
+  }
 
-  File file = fs.open(path, FILE_WRITE);
-  if(!file) {
-    Serial.println("Failed to open file for writing");
-    return;
-  }
-  if(file.print(message)) {
-    Serial.println("File written");
-  } else {
-    Serial.println("Write failed");
-  }
-  file.close();
-}
+  /// Escrever em arquivo no SDCard
+  bool escreverArquivo(const char * path, const char * message){
+    Serial.printf("Escrevendo mensagem %s\n, no arquivo %s\n", message, path);
+    File file = SD.open(path, FILE_APPEND);
 
-// Append data to the SD card (DON'T MODIFY THIS FUNCTION)
-void appendFile(fs::FS &fs, const char * path, const char * message) {
-  Serial.printf("Appending to file: %s\n", path);
+    if(!file) {
+      Serial.println("Não foi possivel abrir o arquivo.");
+      
+      file.close();
+      return false;
+    }
 
-  File file = fs.open(path, FILE_APPEND);
-  if(!file) {
-    Serial.println("Failed to open file for appending");
-    return;
+    if(file.print(message)){
+      Serial.println("Mensagem escrita!");
+    }
+    else{
+      Serial.println("Erro ao escrever mensagem.");
+      
+      file.close();
+      return false;
+    }
+    
+    file.close();
+    return true; 
   }
-  if(file.print(message)) {
-    Serial.println("Message appended");
-  } else {
-    Serial.println("Append failed");
+
+  /// Ler arquivo em SDCard
+  String lerArquivo(const char * path){
+     File file = SD.open(path, FILE_READ);
+     String data = "";
+     while(file.available()){
+       data += file.readString();
+     }
+
+     file.close();
+     return data;
   }
-  file.close();
-}
 };
-
 
 #endif
