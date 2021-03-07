@@ -18,26 +18,27 @@
 #include <SD.h>
 #include <SPI.h>
 
-#define SD_CS 5
+uint8_t SD_CS = 5;
 class LeitorCartao
 {
 
 public:
   /// Construtor padrão, GPIO ---> 5
   LeitorCartao(){
-    initSdCard();
+    init();
   }
 
   /// Construtor, Definir GPIO
   LeitorCartao(uint8_t ssPin){
-    initSdCard(ssPin);
+    SD_CS = ssPin;
+    init();
   }
 
 private:
   /// Inicializar SDCard
-  bool initSdCard(uint8_t ssPin = SD_CS){
+  bool init(){
     int cont = 0;
-    while (!SD.begin(ssPin))
+    while (!SD.begin(SD_CS))
       {
         Serial.println("Não foi possivel montar o SDCard");
         Serial.println("Tentando novamente");

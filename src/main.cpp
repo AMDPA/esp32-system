@@ -1,13 +1,20 @@
 #include <Arduino.h>
-
-#include "classes/LeitorCartao.h"
-
-void setup(){
+#include <OneWire.h>
+#include <DallasTemperature.h>
+OneWire pino(14);
+DallasTemperature barramento(&pino);
+DeviceAddress sensor;
+void setup(void)
+{
   Serial.begin(115200);
-  LeitorCartao l = LeitorCartao();
-  LeitorCartao(5);
-  
+  pinMode(14, INPUT);
+  barramento.begin();
+  barramento.getAddress(sensor, 0);  
 }
-
-void loop(){
+void loop()
+{
+  barramento.requestTemperatures(); 
+  float temperatura = barramento.getTempC(sensor);
+  Serial.print(temperatura);
+  delay(500);
 }

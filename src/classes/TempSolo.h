@@ -18,6 +18,7 @@ class TempSolo
 
     public:
     TempSolo(){}
+
     TempSolo(int pinoGPIO)
     {
         //Informando pino onde tá conectado DS18B20

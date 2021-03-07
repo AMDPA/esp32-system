@@ -3,7 +3,7 @@
 #define Ph_h
 
 #include <Wire.h> 
-int pHSense = 33;
+int pHSense = NULL;
 int samples = 10;
 float adc_resolution = 4095.0;
 
