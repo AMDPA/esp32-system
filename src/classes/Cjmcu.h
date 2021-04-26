@@ -16,7 +16,7 @@
 #include <Wire.h>
 #include <ccs811.h>
 
-CCS811 ccs811(13); 
+
 
 class Cjmcu
 {
@@ -26,6 +26,7 @@ private:
     uint16_t etvoc; 
     uint16_t errstat; 
     uint16_t raw;
+    CCS811 ccs811; 
   
 public:
     Cjmcu();

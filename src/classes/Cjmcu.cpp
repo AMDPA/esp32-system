@@ -1,6 +1,7 @@
 #include "Cjmcu.h"
 
 Cjmcu::Cjmcu(){
+    ccs811 = CCS811(13);
     Wire.begin(); 
     ccs811.set_i2cdelay(50); 
     ccs811.read(&eco2,&etvoc,&errstat,&raw); 

@@ -1,66 +1,117 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-IPAddress local_IP(192,168,4,22);
-IPAddress gateway(192,168,4,9);
-IPAddress subnet(255,255,255,0);
+#include "classes/Chuva.h"
+#include "classes/Cjmcu.h"
+#include "classes/Hidrogenio.h"
+#include "classes/Luminosidade.h"
+#include "classes/TempUmidAr.h"
+#include "classes/UmidSolo.h"
 
-#include "classes/Settings.h"
-//Settings settings;
+#include "classes/LeitorCartao.h"
 
-    struct Network{
-        IPAddress ip      = IPAddress(192,168, 0, 1);
-        IPAddress gateway = IPAddress(192, 168, 0, 1);
-        IPAddress subnet  = IPAddress(255,  255, 255, 0);
-        String ssid       = "ÀMDPA Station";
-        String password   = "";
-
-    };
-    struct Station{
-        String mode = "static";
-        bool active = false;
-    };
-
- 
-
+LeitorCartao l = LeitorCartao();
 void setup()
 {
-  Serial.begin(115200);
-  // Inicializa o sistema e carrega dados importantes. 
- // Serial.println("INICIANDO...\n");
-  //settings = Settings();
-
-  /*Serial.print("Setting soft-AP configuration ... ");
-  Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
-
-  Serial.print("Setting soft-AP ... ");
-  Serial.println(WiFi.softAP("ESPsoftAP_01") ? "Ready" : "Failed!");
-
-  Serial.print("Soft-AP IP address = ");
-  Serial.println(WiFi.softAPIP());*/
-
-  String settJson = "{\"network\": {";                
-                
-                Network n;
-                settJson += "\"ip\": \"" + n.ip.toString() + "\",";
-                settJson += "\"gateway\": \"" + n.gateway.toString() + "\",";
-                settJson += "\"subnet\": \"" + n.subnet.toString() + "\",";
-                settJson += "\"ssid\": \"" + n.ssid + "\",";
-                settJson += "\"password\": \"" + n.password+ "\"";
-                settJson += "},";
-
-                settJson += "{\"station\": {";
-
-                Station s;
-                settJson += "\"mode\": \"" + s.mode + "\",";
-                settJson += "\"active\":" +  s.active;
-                settJson += "}}";
-
-                Serial.println(settJson);
-                Serial.println(settJson.c_str());
+ Serial.begin(115200);
+ delay(10000);
+ Serial.println("INICIAL...");
+ l.createFile("/test.txt");
 }
 
 void loop()
 {
+    Chuva chuva = Chuva();
+    Cjmcu cjmcu = Cjmcu();
+    Hidrogenio hidrogenio = Hidrogenio();
+    Luminosidade luminosidade = Luminosidade();
+    TempUmidAr tempUmidAr = TempUmidAr();
+    UmidSolo umidSolo = UmidSolo();
 
+    delay(2000);
+    Serial.println("----Chuva----");
+   
+    Serial.print("Active: ");
+    Serial.println(chuva.getActive());
+    
+    Serial.print("Analogico: ");
+    Serial.println(chuva.getAnalogico());
+   
+    Serial.print("Digital: ");
+    Serial.println(chuva.getDigital());
+    
+    Serial.print("Status: ");
+    Serial.println(chuva.getStatus());
+
+    Serial.println("-------------\n");
+
+    delay(2000);
+    Serial.println("----Cjmcu----");
+    
+    Serial.print("ECO2:");
+    Serial.println(cjmcu.getEco2());
+   
+    Serial.print("Errstat: ");
+    Serial.println(cjmcu.getErrstat());
+    
+    Serial.print("Etvoc: ");
+    Serial.println(cjmcu.getEtvoc());
+   
+    Serial.print("Raw: ");
+    Serial.println(cjmcu.getRaw());
+    Serial.println("-------------\n");
+
+    delay(2000);
+    Serial.println("----Hidrogenio----");
+    
+    Serial.print("Value: ");
+    Serial.println(hidrogenio.getValue());
+    
+    Serial.println("-------------\n");
+
+    delay(2000);
+    Serial.println("----Luminosidade----");
+    
+    Serial.print("Value: ");
+    Serial.println(luminosidade.getValue());
+    Serial.print("Percent: ");
+    Serial.println(luminosidade.getPercent());
+    Serial.println("-------------\n");
+
+    delay(2000);
+    Serial.println("----TempUmidAr----");
+    
+    Serial.print("HeatIndex: ");
+    Serial.println(tempUmidAr.getHeatIndex());
+    Serial.print("Humidity: ");
+    Serial.println(tempUmidAr.getHumidity());
+    Serial.print("Temperature: ");
+    Serial.println(tempUmidAr.getTemperature());
+    Serial.println("-------------\n");
+
+    delay(2000);
+    Serial.println("----UmidSolo----");
+    
+    Serial.print("Value: ");
+    Serial.println(umidSolo.getValue());
+    Serial.println("-------------\n");
+
+    String msg = "";
+    msg+= "active: " + String(chuva.getActive());
+    msg+= "\nanalogico: " + String(chuva.getAnalogico());
+    msg+= "\ndigital: " + String(chuva.getDigital());
+    msg+= "\nstatus: " + String(chuva.getStatus());
+    msg+= "\nECO2: " + String(cjmcu.getEco2());
+    msg+= "\nErrstat: " + String(cjmcu.getErrstat());
+    msg+= "\nEtvoc: " + String(cjmcu.getEtvoc());
+    msg+= "\nRaw: " + String(cjmcu.getRaw());
+    msg+= "\nvalue: " + String(hidrogenio.getValue());
+    msg+= "\nvalue: " + String(luminosidade.getValue());
+    msg+= "\npercent: " + String(luminosidade.getPercent());
+    msg+= "\n HeatIndex: " + String(tempUmidAr.getHeatIndex());
+    msg+= "\nHumidity: " + String(tempUmidAr.getHumidity());
+    msg+= "\nTemperature: " + String(tempUmidAr.getTemperature());
+    msg+= "\nValue: " + umidSolo.getValue();
+
+    l.writeFile("/test.txt", msg);
 }
