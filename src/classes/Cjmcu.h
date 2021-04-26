@@ -1,39 +1,39 @@
-///
-///
-///Configurations: 
-/// - Pino: scl(22),sda(21)
-/// - Voltagem: 3.3v
-///
-///
+/*
+ Cjmcu.h - Arquivo incluso no projeto ÀMDPA - 2021
+
+ Configurações (Padrão):
+  - VCC  ---> 3V3
+  - GND  ---> GND
+  - SCL  ---> GPIO 22
+  - SDA  ---> GPIO 21
+  - WAK  ---> GPIO 13
+*/
+
 #ifndef Cjmcu_h
 #define Cjmcu_h
 
 #include <Arduino.h>
-#include <Adafruit_CCS811.h>
-#include <SparkFunCCS811.h>
-#define CCS811_ADDR 0x5A
+#include <Wire.h>
+#include <ccs811.h>
 
-Adafruit_CCS811 ccs;
+
 
 class Cjmcu
 {
+
+private: 
+    uint16_t eco2; 
+    uint16_t etvoc; 
+    uint16_t errstat; 
+    uint16_t raw;
+    CCS811 ccs811; 
   
 public:
-    Cjmcu()
-    {
-        ccs.begin();
-    }
-    
-    void Update()
-    {
-        ccs.available();
-        ccs.readData();
-        Serial.print("CO2: ");
-        Serial.print(ccs.geteCO2());
-        Serial.print("ppm, TVOC: ");
-        Serial.println(ccs.getTVOC());
-        Serial.print("\n\n");
-  }
+    Cjmcu();
+    uint16_t getEco2();
+    uint16_t getEtvoc();
+    uint16_t getErrstat();
+    uint16_t getRaw();
 };
 
 #endif

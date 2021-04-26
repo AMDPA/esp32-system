@@ -1,35 +1,40 @@
-///
-///
-///Configurations: 
-/// - Pino: 34
-/// - Voltagem: 3.3v
-///
-///
+/*
+ Chuva.h - Arquivo incluso no projeto ÀMDPA - 2021
 
+ Configurações (Padrão):
+  - VCC  ---> 3V3
+  - GND  ---> GND
+  - A0   ---> GPIO 34
+  - D0   ---> GPIO 33
+*/
 
-#include <Arduino.h>
 
 #ifndef Chuva_h
 #define Chuva_h
 
-#define PIN 34
+#include <Arduino.h>
+
 class Chuva
 {
-private:
-    /* data */
-public:
-    Chuva()
-    {
-        pinMode(PIN, INPUT);
-    }
+    
+private: 
+    uint8_t digitalPin = 34;
+    uint8_t analogicoPin = 33;
+    bool active;
+    int analogico;
+    int digital;
+    String status;
 
-    void Update()
-    {
-        int leitura = analogRead(PIN);
-        Serial.println("SENSOR DE CHUVA");
-        Serial.println(leitura);
-        Serial.print("\n\n");
-    }
+public:
+    Chuva();
+    Chuva(uint8_t dPin, uint8_t aPin);
+    bool getActive();
+    int getAnalogico();
+    int getDigital();
+    String getStatus();
+
+private: 
+    void atDados();
 };
 
 #endif

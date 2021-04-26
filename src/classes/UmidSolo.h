@@ -1,12 +1,12 @@
-///Classe responsavel pela medição da umidade do solo. 
-///Código baseado em: https://how2electronics.com/capacitive-soil-moisture-sensor-esp8266-esp32-oled-display/
-///
-///
-///Configurations: 
-/// - Pino: 15
-/// - Voltagem: 3.3v
-///
-///
+/*
+ UmidSolo.h - Arquivo incluso no projeto ÀMDPA - 2021
+
+ Configurações (Padrão):
+  - VCC  ---> 3V3
+  - GND  ---> GND
+  - AUOT ---> GPIO 15  
+*/
+
 #ifndef UmidSolo_h
 #define UmidSolo_h
 
@@ -15,7 +15,7 @@
 
 class UmidSolo
 {
-    private: 
+private: 
     //variaveis de calibração do sensor
     /**
      * Para calibrar o sensor deve-se:
@@ -24,32 +24,16 @@ class UmidSolo
      * em suas respectivas variaveis. 
     */
     int AirValue = 3665;   //valor obtido no ar
-    int WaterValue = 1755;  //valor obtido na agua
+    int WaterValue = 1634;  //valor obtido na agua
     int SensorPin = 15;
     int soilMoistureValue = 0;
-    int soilmoisturepercent = 0;
 
-    public:
-    UmidSolo(){}
-    UmidSolo(int pinoGPIO)
-    {
-        SensorPin = pinoGPIO;
-    }
+    int percent;
 
-    void Update()
-    {
-        Serial.println("CAPACITATIVE SOIL MOISTURE SENSOR V2.0");
-    //Obter valor de medição
-    soilMoistureValue = analogRead(SensorPin);
-
-    //passar valor para % considerando os valores de calibração
-    soilmoisturepercent = map(soilMoistureValue, AirValue, WaterValue, 0, 100);
-
-    //Exibir umidade 
-    Serial.print("Analog read: " + String(soilMoistureValue) + "\n");
-    Serial.print("Percent: " + String(soilmoisturepercent) + "\n");
-Serial.print("\n\n");
-    }
+public:
+    UmidSolo();
+    UmidSolo(int pin);
+    int getValue();
 };
 
 #endif

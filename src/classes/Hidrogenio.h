@@ -1,35 +1,29 @@
-#include <Arduino.h>
-///Classe responsavel pela medição do gás Hidrogenio. 
-///Código baseado em: https://randomnerdtutorials.com/esp32-ds18b20-temperature-arduino-ide/
+/*
+ Hidrogenio.h - Arquivo incluso no projeto ÀMDPA - 2021
 
-///
-///
-///Configurations: 
-/// - Pino: 35
-/// - Voltagem: 5v
-///
-///
+ Configurações (Padrão):
+  - VCC  ---> 5V
+  - GND  ---> GND
+  - D0   --->
+  - A0   ---> 35
+*/
 
 #ifndef Hidrogenio_h
 #define Hidrogenio_h
 
+#include <Arduino.h>
+
 class Hidrogenio
 {
-private:
-    /* data */
+
+private: 
+    uint8_t pin = 35;
+    int value;
+
 public:
-    Hidrogenio()
-    {
-
-    }
-
-    void Update()
-    {
-        int valor = analogRead(35);
-        Serial.println("HIDROGENIO");
-        Serial.println(valor);
-        Serial.print("\n\n");
-    }
+    Hidrogenio();
+    Hidrogenio(uint8_t p);
+    int getValue();
+    
 };
-
 #endif

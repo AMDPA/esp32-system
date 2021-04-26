@@ -1,18 +1,18 @@
-#include <Arduino.h>
+/*#include <Arduino.h>
 #ifndef Ph_h
 #define Ph_h
 
 #include <Wire.h> 
-int pHSense = 12;
+int pHSense = NULL;
 int samples = 10;
 float adc_resolution = 4095.0;
 
 class Ph
 {
 private:
-    /* data */
+    /* data 
 public:
-    Ph(/* args */){
+    Ph(/* args ){
 
     }
 
@@ -21,16 +21,20 @@ public:
   for (int i = 0; i < samples; i++)
   {
     measurings += analogRead(pHSense);
+    Serial.println(analogRead(pHSense));
     delay(10);
   }
-    float voltage = 5 / adc_resolution * measurings/samples;
+    float voltage = 5 / adc_resolution * (measurings/samples);
+    Serial.println(voltage);
     Serial.print("pH= ");
     Serial.println(ph(voltage));
-    delay(3000);
+    delay(1000);
     }
 
     float ph (float voltage) {
-  return 7 + ((2.5 - voltage) / 0.18);
+  float a = 7 + ((2.5 - voltage) / 0.18);
+  Serial.println(a);
+  return a;
 }
 };
-#endif
+#endif*/
