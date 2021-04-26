@@ -13,28 +13,17 @@
 
 #include <Arduino.h>
 
-uint8_t pin = 35;
-
 class Hidrogenio
 {
-public:
-    Hidrogenio(){
-        init();
-    }
 
-    Hidrogenio(uint8_t p){
-        pin = p;
-    }
-
-private:
-    void init(){
-        pinMode(pin, INPUT);
-    }
+private: 
+    uint8_t pin = 35;
+    int value;
 
 public:
-    int getHidrogenio(){
-        return analogRead(pin);
-    }
+    Hidrogenio();
+    Hidrogenio(uint8_t p);
+    int getValue();
+    
 };
-
 #endif

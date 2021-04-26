@@ -1,4 +1,4 @@
-#include <Arduino.h>
+/*#include <Arduino.h>
 #ifndef Ph_h
 #define Ph_h
 
@@ -10,9 +10,9 @@ float adc_resolution = 4095.0;
 class Ph
 {
 private:
-    /* data */
+    /* data 
 public:
-    Ph(/* args */){
+    Ph(/* args ){
 
     }
 
@@ -37,4 +37,4 @@ public:
   return a;
 }
 };
-#endif
+#endif*/

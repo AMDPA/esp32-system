@@ -1,4 +1,4 @@
-#ifndef Hora_h
+/*#ifndef Hora_h
 #define Hora_h
 
 #include <Arduino.h>
@@ -49,4 +49,4 @@ public:
     }   
 };
 
-#endif
+#endif*/

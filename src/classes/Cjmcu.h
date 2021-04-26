@@ -20,31 +20,19 @@ CCS811 ccs811(13);
 
 class Cjmcu
 {
+
+private: 
+    uint16_t eco2; 
+    uint16_t etvoc; 
+    uint16_t errstat; 
+    uint16_t raw;
   
 public:
-
-    // Construtor padrão
-    Cjmcu()
-    {
-        Wire.begin(); 
-        ccs811.set_i2cdelay(50); 
-    }
-    
-    // Obter leitura atual de CO2
-    int getCO2(){
-       uint16_t eco2, etvoc, errstat, raw;
-       ccs811.read(&eco2,&etvoc,&errstat,&raw); 
-
-       return eco2;
-    }
-
-    // Obter leitura atual de TVOC  
-    int getTVOC(){
-        uint16_t eco2, etvoc, errstat, raw;
-        ccs811.read(&eco2,&etvoc,&errstat,&raw); 
-        
-        return etvoc;
-    }
+    Cjmcu();
+    uint16_t getEco2();
+    uint16_t getEtvoc();
+    uint16_t getErrstat();
+    uint16_t getRaw();
 };
 
 #endif

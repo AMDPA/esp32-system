@@ -1,4 +1,4 @@
-///Classe responsavel pela medição da temperatura do solo. 
+/*///Classe responsavel pela medição da temperatura do solo. 
 ///Código baseado em: https://randomnerdtutorials.com/esp32-ds18b20-temperature-arduino-ide/
 
 #ifndef TempSolo_h
@@ -49,4 +49,4 @@ class TempSolo
     }
 };
 
-#endif
+#endif*/

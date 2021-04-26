@@ -15,42 +15,23 @@
 
 #include <Arduino.h>
 
-uint8_t pin = 26;
+
 class Luminosidade
 {
+private: 
+    uint8_t pin = 26;
+    int value;
+    float percent;
 
 public:
-    // Construtor padrão, GPIO 26
-    Luminosidade(){
-        init();
-    }
-
-    // Construtor opcional, informar GPIO
-    Luminosidade (uint8_t p){
-        pin = p;
-        init();
-    }
+    Luminosidade();
+    Luminosidade (uint8_t p);
+    int getValue();
+    float getPercent();
 
 private:
-    void init(){
-        pinMode(pin, INPUT);
-    }
+    void init();
 
-public:
-    // Obter leitura analogica do sensor (0, 4095)
-    int getAnalog(){
-        int valor = analogRead(pin);
-        
-        return valor;
-    }
-
-    // Obter porcentagem de leitura
-    int getPorcentagem(){
-        int valor = analogRead(pin);
-        double porcentagem = map(valor, 0, 4095, 0, 100);
-        
-        return porcentagem;
-    }
 };
 
 #endif

@@ -1,4 +1,4 @@
-#ifndef Energia_h
+/*#ifndef Energia_h
 #define Energia_h
 
 #include <Arduino.h>
@@ -7,7 +7,7 @@
 class Energia
 {
 private:
-    /* data */
+    
 public:
     Energia() {}
 
@@ -23,3 +23,4 @@ public:
 };
 
 #endif
+*/
