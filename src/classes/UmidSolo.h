@@ -31,8 +31,8 @@ private:
     int percent;
 
 public:
-    UmidSolo();
-    UmidSolo(int pin);
+    void init();
+    void update();
     int getValue();
 };
 

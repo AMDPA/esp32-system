@@ -1,0 +1,247 @@
+/* 
+ *  Programa baseado no programa original desenvolvido por Timothy Woo 
+ *  Tutorial do projeto original; https://www.hackster.io/botletics/esp32-ble-android-arduino-ide-awesome-81c67d
+ *  Modificado para ler dados do sensor DHT11 - Bluetooth Low Energy com ESP32
+ */ 
+/*
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+ 
+#include <DHT.h>
+ 
+#include <iostream>
+#include <string>
+ 
+BLECharacteristic *pCharacteristic;
+ 
+bool deviceConnected = false;
+ 
+// Veja o link seguinte se quiser gerar seus próprios UUIDs:
+// https://www.uuidgenerator.net/
+ 
+#define SERVICE_UUID           "6E400001-B5A3-F393-E0A9-E50E24DCCA9E" // UART service UUID
+#define CHARACTERISTIC_UUID_RX "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
+#define DHTDATA_CHAR_UUID "6E400003-B5A3-F393-E0A9-E50E24DCCA9E" 
+ 
+ 
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+ 
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+ 
+class MyCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+      std::string rxValue = pCharacteristic->getValue();
+      Serial.println(rxValue[0]);
+ 
+      if (rxValue.length() > 0) {
+        Serial.println("*********");
+        Serial.print("Received Value: ");
+ 
+        for (int i = 0; i < rxValue.length(); i++) {
+          Serial.print(rxValue[i]);
+        }
+        Serial.println();
+        Serial.println("*********");
+      }
+ 
+      // Processa o caracter recebido do aplicativo. Se for A acende o LED. B apaga o LED
+      if (rxValue.find("A") != -1) { 
+        Serial.println("Turning ON!");
+       
+      }
+      else if (rxValue.find("B") != -1) {
+        Serial.println("Turning OFF!");
+        
+      }
+    }
+};
+ 
+void setup() {
+  Serial.begin(115200);
+  Serial.println("INICIAL...");
+  l = LeitorCartao();
+  json = Json();
+  l.createFile("/test.txt");
+  // Create the BLE Device
+  BLEDevice::init("ESP32 DHT11"); // Give it a name
+  BLEDevice::setMTU(500);
+
+  // Configura o dispositivo como Servidor BLE
+  BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+ 
+  // Cria o servico UART
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+ 
+  // Cria uma Característica BLE para envio dos dados
+  pCharacteristic = pService->createCharacteristic(
+                      DHTDATA_CHAR_UUID,
+                      BLECharacteristic::PROPERTY_NOTIFY
+                    );
+                       
+  pCharacteristic->addDescriptor(new BLE2902());
+ 
+  // cria uma característica BLE para recebimento dos dados
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+                                         CHARACTERISTIC_UUID_RX,
+                                         BLECharacteristic::PROPERTY_WRITE
+                                       );
+ 
+  pCharacteristic->setCallbacks(new MyCallbacks());
+ 
+  // Inicia o serviço
+  pService->start();
+ 
+  // Inicia a descoberta do ESP32
+  pServer->getAdvertising()->start();
+  Serial.println("Esperando um cliente se conectar...");
+}
+ 
+void loop() {
+    Chuva chuva = Chuva();
+    Cjmcu cjmcu = Cjmcu();
+    Hidrogenio hidrogenio = Hidrogenio();
+    Luminosidade luminosidade = Luminosidade();
+    TempUmidAr tempUmidAr = TempUmidAr();
+    UmidSolo umidSolo = UmidSolo();
+
+  if (deviceConnected) {
+ 
+   
+    Serial.println("----Chuva----");
+   
+    Serial.print("Active: ");
+    Serial.println(chuva.getActive());
+    
+    Serial.print("Analogico: ");
+    Serial.println(chuva.getAnalogico());
+   
+    Serial.print("Digital: ");
+    Serial.println(chuva.getDigital());
+    
+    Serial.print("Status: ");
+    Serial.println(chuva.getStatus());
+
+    Serial.println("-------------\n");
+
+    Serial.println("----Cjmcu----");
+    
+    Serial.print("ECO2:");
+    Serial.println(cjmcu.getEco2());
+   
+    Serial.print("Errstat: ");
+    Serial.println(cjmcu.getErrstat());
+    
+    Serial.print("Etvoc: ");
+    Serial.println(cjmcu.getEtvoc());
+   
+    Serial.print("Raw: ");
+    Serial.println(cjmcu.getRaw());
+    Serial.println("-------------\n");
+
+    Serial.println("----Hidrogenio----");
+    
+    Serial.print("Value: ");
+    Serial.println(hidrogenio.getValue());
+    
+    Serial.println("-------------\n");
+
+    Serial.println("----Luminosidade----");
+    
+    Serial.print("Value: ");
+    Serial.println(luminosidade.getValue());
+    Serial.print("Percent: ");
+    Serial.println(luminosidade.getPercent());
+    Serial.println("-------------\n");
+
+    Serial.println("----TempUmidAr----");
+    
+    Serial.print("HeatIndex: ");
+    Serial.println(tempUmidAr.getHeatIndex());
+    Serial.print("Humidity: ");
+    Serial.println(tempUmidAr.getHumidity());
+    Serial.print("Temperature: ");
+    Serial.println(tempUmidAr.getTemperature());
+    Serial.println("-------------\n");
+
+    Serial.println("----UmidSolo----");
+    
+    Serial.print("Value: ");
+    Serial.println(umidSolo.getValue());
+    Serial.println("-------------\n");
+
+    StaticJsonDocument<300> doc;
+    doc["data"] = "2021-04-27";
+    doc["hora"] = "21h 12min";
+    
+    JsonObject obj = doc.createNestedObject("chuva");
+    obj["value"] = chuva.getAnalogico();
+
+    obj = doc.createNestedObject("Cjmcu");
+    obj["value"] = cjmcu.getEco2();
+
+    obj = doc.createNestedObject("Hidrogenio");
+    obj["value"] = hidrogenio.getValue();
+
+    obj = doc.createNestedObject("Luminosidade");
+    obj["value"] = luminosidade.getPercent();
+
+    obj = doc.createNestedObject("TempUmidAr");
+    obj["value"] = tempUmidAr.getHeatIndex();
+
+
+    String msg = json.serialize(doc);
+    msg+= "active: " + String(chuva.getActive());
+    msg+= "\nanalogico: " + String(chuva.getAnalogico());
+    msg+= "\ndigital: " + String(chuva.getDigital());
+    msg+= "\nstatus: " + String(chuva.getStatus());
+    msg+= "\nECO2: " + String(cjmcu.getEco2());
+    msg+= "\nErrstat: " + String(cjmcu.getErrstat());
+    msg+= "\nEtvoc: " + String(cjmcu.getEtvoc());
+    msg+= "\nRaw: " + String(cjmcu.getRaw());
+    msg+= "\nvalue: " + String(hidrogenio.getValue());
+    msg+= "\nvalue: " + String(luminosidade.getValue());
+    msg+= "\npercent: " + String(luminosidade.getPercent());
+    msg+= "\nHeatIndex: " + String(tempUmidAr.getHeatIndex());
+    msg+= "\nHumidity: " + String(tempUmidAr.getHumidity());
+    msg+= "\nTemperature: " + String(tempUmidAr.getTemperature());
+    msg+= "\nValue: " + umidSolo.getValue();
+
+    Serial.println(msg);
+
+    l.writeFile("/json.json", msg);
+    pCharacteristic->setValue(msg.c_str());
+    pCharacteristic->notify();
+     
+  }
+  delay(1000);
+}*/
+
+void genericTask(void * parameter){
+    Serial.print("Executando tarefa no nucleo ");
+    Serial.println(xPortGetCoreID());
+    vTaskDelete(NULL);
+}
+
+void setup(){
+    Serial.begin(115200);
+    delay(1000); 
+    Serial.print("Executando setup() no nucleo ");
+    Serial.println(xPortGetCoreID());
+    xTaskCreate(genericTask,"funcaoTeste",10000,NULL,2,NULL);
+    delay(2000);
+}
+
+void loop(){
+    Serial.print("loop executando no nucleo ");
+    Serial.println(xPortGetCoreID());
+    delay(1000);
+}
