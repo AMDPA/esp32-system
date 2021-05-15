@@ -20,7 +20,7 @@
 #define Type ("MQ-8") 
 #define Voltage_Resolution (3.3) 
 #define ADC_Bit_Resolution (12) 
-#define RatioMQ8CleanAir (70) 
+#define RatioMQ8CleanAir (10) 
 
 class Hidrogenio
 {

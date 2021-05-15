@@ -1,6 +1,7 @@
 #include "TempUmidAr.h"
 
 void TempUmidAr::init(){
+   pinMode(2, INPUT);
    dht.setup(2, DHTesp::DHT11);
 }
 

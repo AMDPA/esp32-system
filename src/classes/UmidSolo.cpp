@@ -1,7 +1,7 @@
 #include "UmidSolo.h"
 
 void UmidSolo::init(){
-    
+    pinMode(SensorPin, INPUT);
 }
 
 void UmidSolo::update(){

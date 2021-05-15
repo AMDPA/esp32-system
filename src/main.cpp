@@ -32,9 +32,9 @@ void setup(){
     tempUmidAr.init();
     umidSolo.init();
 
-    if(!leitorCartao.fileExists("/medicoes3.csv")){
-        leitorCartao.createFile("/medicoes3.csv");
-        leitorCartao.writeFile("/medicoes3.csv", "cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
+    if(!leitorCartao.fileExists("/medicoes4.csv")){
+        leitorCartao.createFile("/medicoes4.csv");
+        leitorCartao.writeFile("/medicoes4.csv", "cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
     }
 }
 
@@ -46,7 +46,7 @@ void loop(){
     tempUmidAr.update();
     umidSolo.update();
 
-    if(millis() - millisLeitura > 60000){
+    if(millis() - millisLeitura >= 2000 ){
         String msg = "";
 
         msg += String(cjmcu.getEco2()) + ", ";
@@ -62,9 +62,8 @@ void loop(){
 
         msg += String(umidSolo.getValue()) + "\n";
         
-        leitorCartao.writeFile("/medicoes3.csv", msg);
-
+        //leitorCartao.writeFile("/medicoes4.csv", msg);
+        Serial.println(msg);
         millisLeitura = millis();
     }
-    
 }

@@ -2,7 +2,8 @@
 
 void Luminosidade::init(){
    
-    
+    pinMode(pin, INPUT);
+
 }
 
 void Luminosidade::update(){

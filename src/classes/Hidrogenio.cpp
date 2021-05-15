@@ -16,6 +16,7 @@ void Hidrogenio::init(){
     }
 
     MQ8.setR0(calcR0/10);
+
 }
 
 void Hidrogenio::update(){
