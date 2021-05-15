@@ -14,9 +14,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <ccs811.h>
-
-
+#include <Adafruit_CCS811.h>
 
 class Cjmcu
 {
@@ -24,16 +22,14 @@ class Cjmcu
 private: 
     uint16_t eco2; 
     uint16_t etvoc; 
-    uint16_t errstat; 
-    uint16_t raw;
-    CCS811 ccs811; 
+    Adafruit_CCS811 ccs;
+
   
 public:
-    Cjmcu();
+    void init();
+    void update();
     uint16_t getEco2();
     uint16_t getEtvoc();
-    uint16_t getErrstat();
-    uint16_t getRaw();
 };
 
 #endif

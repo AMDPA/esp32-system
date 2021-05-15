@@ -1,10 +1,14 @@
 #include "TempUmidAr.h"
 
-TempUmidAr::TempUmidAr(){
+void TempUmidAr::init(){
+   pinMode(2, INPUT);
    dht.setup(2, DHTesp::DHT11);
-   humidity = dht.getHumidity();
-   temperature = dht.getTemperature();
-   heatIndex = dht.computeHeatIndex(temperature, humidity);
+}
+
+void TempUmidAr::update(){
+    humidity = dht.getHumidity();
+    temperature = dht.getTemperature();
+    heatIndex = dht.computeHeatIndex(temperature, humidity);
 }
 float TempUmidAr::getHumidity(){
     return humidity;

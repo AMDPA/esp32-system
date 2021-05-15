@@ -1,12 +1,10 @@
 #include "UmidSolo.h"
 
-UmidSolo::UmidSolo(){
-    soilMoistureValue = analogRead(SensorPin);
-    percent = map(soilMoistureValue, AirValue, WaterValue, 0, 100);
+void UmidSolo::init(){
+    pinMode(SensorPin, INPUT);
 }
 
-UmidSolo::UmidSolo(int pin){
-    SensorPin = pin;
+void UmidSolo::update(){
     soilMoistureValue = analogRead(SensorPin);
     percent = map(soilMoistureValue, AirValue, WaterValue, 0, 100);
 }

@@ -12,18 +12,28 @@
 #define Hidrogenio_h
 
 #include <Arduino.h>
+#include <MQUnifiedsensor.h>
+
+#define Board ("ESP-32") 
+#define Pin (35) 
+
+#define Type ("MQ-8") 
+#define Voltage_Resolution (3.3) 
+#define ADC_Bit_Resolution (12) 
+#define RatioMQ8CleanAir (10) 
 
 class Hidrogenio
 {
 
 private: 
+    MQUnifiedsensor MQ8;
     uint8_t pin = 35;
-    int value;
+    float ppm;
 
 public:
-    Hidrogenio();
-    Hidrogenio(uint8_t p);
-    int getValue();
+    void init();
+    void update();
+    float getPpm();
     
 };
 #endif

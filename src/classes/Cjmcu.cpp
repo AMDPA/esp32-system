@@ -1,10 +1,21 @@
 #include "Cjmcu.h"
 
-Cjmcu::Cjmcu(){
-    ccs811 = CCS811(13);
-    Wire.begin(); 
-    ccs811.set_i2cdelay(50); 
-    ccs811.read(&eco2,&etvoc,&errstat,&raw); 
+void Cjmcu::init(){
+    
+    if(!ccs.begin()){
+        while(1);
+    }
+
+    while (!ccs.available());
+}
+
+void Cjmcu::update(){
+    if(ccs.available()){
+        if(!ccs.readData()){
+            eco2 = ccs.geteCO2();
+            etvoc = ccs.getTVOC();
+        }
+    }
 }
 
 uint16_t Cjmcu::getEco2(){
@@ -13,12 +24,4 @@ uint16_t Cjmcu::getEco2(){
 
 uint16_t Cjmcu::getEtvoc(){
     return etvoc;
-}
-
-uint16_t Cjmcu::getErrstat(){
-    return errstat;
-}
-
-uint16_t Cjmcu::getRaw(){
-    return raw;
 }

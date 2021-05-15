@@ -24,13 +24,10 @@ private:
     float percent;
 
 public:
-    Luminosidade();
-    Luminosidade (uint8_t p);
     int getValue();
     float getPercent();
-
-private:
     void init();
+    void update();
 
 };
 

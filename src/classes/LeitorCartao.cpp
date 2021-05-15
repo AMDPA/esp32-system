@@ -1,13 +1,8 @@
 #include "LeitorCartao.h"
 
-LeitorCartao::LeitorCartao(){
+void LeitorCartao::initSD(){
     init();
-    SD.begin(SD_CS);
-}
-
-LeitorCartao::LeitorCartao(uint8_t pin){
-    SD_CS = pin;
-    SD.begin(SD_CS);
+    while(!SD.begin(SD_CS));
 }
 
 void LeitorCartao::createFile(String path){
@@ -30,4 +25,12 @@ String LeitorCartao::readFile(String path){
 
      file.close();
      return data;
+}
+
+bool LeitorCartao::fileExists(String path){
+    File file = SD.open(path, FILE_READ);
+    if(file){
+        return true;
+    }
+    return false;
 }

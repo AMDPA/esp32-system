@@ -22,7 +22,8 @@ private:
     float heatIndex;
     
 public:
-    TempUmidAr();
+    void init();
+    void update();
     float getHumidity();
     float getTemperature();
     float  getHeatIndex();

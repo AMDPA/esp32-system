@@ -24,10 +24,10 @@ private:
   uint8_t SD_CS = 5;
 
 public:
-  LeitorCartao();
-  LeitorCartao(uint8_t pin);
+  void initSD();
   void createFile(String path);
   void writeFile(String path, String msg);
+  bool fileExists(String path);
   String readFile(String path);
 };
 

@@ -25,6 +25,46 @@ Seu principal objetivo é prosseguir com o projeto desenvolvido na XI Semana Nac
 
 - 09/2019 - FAPES
 
+## Compreendendo
+
+Esse repositório possue classes para manuseio dos seguintes módulos/sensores:
+
+- MicroCard SD Adapter
+- Umidade e Temperatura (DTH11)
+- Sensor de Luminosidade (CJMCU-101)
+- Umidade do Solo V2.0
+- Detecção de pH (pH-4502c)
+- Dióxido de Carbono (CCS881)
+- Hidrogênio (MQ-8)
+- Chuva (MH-RD)
+- Temperatura (18B20)
+
+Todas as classes seguem um mesmo padrão arquitetônico. Sendo:
+
+```bash
+Class.init();
+```
+
+para inicializar o módulo,
+
+```bash
+Class.update();
+```
+
+para atualizar os valores de medição e
+
+```bash
+Class.get...();
+```
+
+para obter os valores lidos.
+Além disso, todas as classes possuem headers para indexar seus metodos e funções e cpp's onde são implementados a codificação.
+Para se usar uma classe especifica, deve-se importa-la:
+
+```bash
+#include "classes/nomeClasse.h";
+```
+
 ## Desenvolvendo
 
 Para trabalhar em equipe através do GitHub é preciso algumas configurações:
@@ -77,7 +117,7 @@ Com todas as configurações concluidas, pode-se iniciar a contribuição mutua.
 
 ### Clone o repositorio para sua máquina local
 
-Na pasta como "Docs", por exemplo execute o seguinte comando. Será criado uma pasta chamada amdpa com o codigo do projeto. Logo apos inicie o VSCode.
+Na pasta como "Docs", por exemplo, execute o seguinte comando. Será criado uma pasta chamada amdpa com o codigo do projeto. Logo apos inicie o VSCode.
 
 ```sh
 git clone git@github.com:lfvicent3/amdpa.git
@@ -147,3 +187,7 @@ git merge origin/main
 - É preciso definir quem irá modificar cada parte do projeto para evitar eventuais conflitos.
 
 - Apesar de não ser uma ferramenta de contribuição em tempo real. Git e GitHub permite que todas as alterações feitas sejam salvas, permitindo que todo o trabalho seja monitorado.
+
+---
+
+Escrito por [@lfvicent3](https://github.com/lfvicent3). Contato: [luiz.costa@rav.tec.br](mailto:luiz.costa@rav.tec.br)
