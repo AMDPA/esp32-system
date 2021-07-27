@@ -26,15 +26,13 @@ private:
     String status;
 
 public:
-    Chuva();
-    Chuva(uint8_t dPin, uint8_t aPin);
+    void init();
+    void update();
     bool getActive();
     int getAnalogico();
     int getDigital();
     String getStatus();
 
-private: 
-    void atDados();
 };
 
 #endif
