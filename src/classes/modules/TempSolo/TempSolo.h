@@ -1,5 +1,11 @@
-///Classe responsavel pela medição da temperatura do solo. 
-///Código baseado em: https://randomnerdtutorials.com/esp32-ds18b20-temperature-arduino-ide/
+/*
+ TempSolo.h - Arquivo incluso no projeto ÀMDPA - 2021
+
+ Configurações (Padrão):
+  - VCC  ---> 3V3
+  - DD   ---> GPIO 12
+*/
+
 
 #ifndef TempSolo_h
 #define TempSolo_h
