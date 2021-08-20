@@ -4,35 +4,41 @@
 #include <Arduino.h>
 
 #include <BLEDevice.h>
-#include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
-
+#include <BLEServer.h>
 #include <iostream>
 #include <string>
- 
+#include <StringSplitter.h>
 
-#define SERVICE_UUID           "6E400001-B5A3-F393-E0A9-E50E24DCCA9E" // UART service UUID
-#define CHARACTERISTIC_UUID_RX "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
-#define DHTDATA_CHAR_UUID "6E400003-B5A3-F393-E0A9-E50E24DCCA9E" 
+#include "Hora.h"
 
+#define SERVICE_UUID           "f9d4045a-ff8b-11eb-9a03-0242ac130003"
+#define CHARACTERISTIC_UUID_RX "f9d40860-ff8b-11eb-9a03-0242ac130003"
+#define DHTDATA_CHAR_UUID      "f9d40982-ff8b-11eb-9a03-0242ac130003"
+#define HOUR_UUID              "9fbc90f6-01f0-11ec-9a03-0242ac130003"
+#define OPERATION_UUID         "fa0b0f5a-01f6-11ec-9a03-0242ac130003"
+#define ATUA_UUID              "654b1b18-01ff-11ec-9a03-0242ac130003"
+
+extern bool deviceConnected;
 class Ble{
-public:
-    BLECharacteristic *pCharacteristic;
-    bool deviceConnected = false;
-    void con();
-    
-};
-class BleServerCallbacks: public BLEServerCallbacks, public Ble{
-    void onConnect(BLEServer* pServer);
-    void onDisconnect(BLEServer* pServer);
+    private:
+        BLECharacteristic *pCharacteristic;
+
+    public:
+        void init();
+        void sendValue(std::string value);
 };
 
-class BleCallbacks: public BLECharacteristicCallbacks{
-    void onWrite(BLECharacteristic *pCharacteristic);
-
+class MyServerCallbacks: public BLEServerCallbacks {
+    private:
+        void onConnect(BLEServer* pServer);
+        void onDisconnect(BLEServer* pServer);
 };
 
-
+class MyCallbacks: public BLECharacteristicCallbacks {
+    private:
+        void onWrite(BLECharacteristic *pCharacteristic);
+};
 
 #endif

@@ -1,73 +1,93 @@
 #include "Ble.h"
-void BleServerCallbacks::onConnect(BLEServer* pServer){
-    
-    deviceConnected = true;
-  
+
+void Ble::init(){
+  BLEDevice::init("ESP32 AMACPA~AMDPA");
+  BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+
+  //Envio de dados
+  pCharacteristic = pService->createCharacteristic(DHTDATA_CHAR_UUID, BLECharacteristic::PROPERTY_NOTIFY);
+  pCharacteristic->addDescriptor(new BLE2902());
+
+  //Recebimento de dados
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID_RX, BLECharacteristic::PROPERTY_WRITE);
+  pCharacteristic->setCallbacks(new MyCallbacks());
+
+  //Ajusta Hora
+  BLECharacteristic *hourCaracteristic = pService->createCharacteristic(HOUR_UUID, BLECharacteristic::PROPERTY_WRITE);
+  hourCaracteristic->setCallbacks(new MyCallbacks());
+
+  //Definir modo de Operação
+  BLECharacteristic *operationCaracteristic = pService->createCharacteristic(OPERATION_UUID, BLECharacteristic::PROPERTY_WRITE);
+  operationCaracteristic->setCallbacks(new MyCallbacks());
+
+  pService->start();
+  pServer->getAdvertising()->start();
 }
 
-void BleServerCallbacks::onDisconnect(BLEServer* pServer){
-   
-   deviceConnected = false;
+void Ble::sendValue(std::string value){
+  Serial.println("BLE");
+  pCharacteristic->setValue(value);
+  pCharacteristic->notify(); // Envia o valor para o aplicativo!
+  Serial.print("*** Dado enviado: ");
+  Serial.print(String(value.c_str()));
+  Serial.println(" ***");
 }
 
-void BleCallbacks::onWrite(BLECharacteristic *pCharacteristic){
-   std::string rxValue = pCharacteristic->getValue();
+void MyServerCallbacks::onConnect(BLEServer* pServer){
+  deviceConnected = true;
+}
+
+void MyServerCallbacks::onDisconnect(BLEServer* pServer){
+  deviceConnected = false;
+}
+
+void MyCallbacks::onWrite(BLECharacteristic *pCharacteristic){
+  std::string rxValue = pCharacteristic->getValue();
+  std::string cUUID = pCharacteristic->getUUID().toString();
+
+  if(cUUID == HOUR_UUID){
+    Hora hora = Hora();
+    hora.setUnixTimeStamp(String(rxValue.c_str()).toInt());
+  }
+  else if(cUUID == OPERATION_UUID){
+    String d = String(rxValue.c_str());
+    StringSplitter *splitter = new StringSplitter(d, ',', 3);
+
+    if(String(splitter->getItemAtIndex(0)) == "WIFI"){
+      String redeNome =  splitter->getItemAtIndex(1);
+      String redePassword =  splitter->getItemAtIndex(2);
+    }
+  }
+  else if(cUUID == ATUA_UUID){
+    String d = String(rxValue.c_str());
+    StringSplitter *splitter = new StringSplitter(d, ',', 3);
+
+    if(String(splitter->getItemAtIndex(0)) == "DIA"){
+      int time = String(splitter->getItemAtIndex(1)).toInt();
+    }
+    else{
+      int id = String(splitter->getItemAtIndex(1)).toInt();
+    }
+  }
       Serial.println(rxValue[0]);
- 
+
       if (rxValue.length() > 0) {
         Serial.println("*********");
         Serial.print("Received Value: ");
- 
+
         for (int i = 0; i < rxValue.length(); i++) {
           Serial.print(rxValue[i]);
         }
         Serial.println();
         Serial.println("*********");
       }
- 
-      // Processa o caracter recebido do aplicativo. Se for A acende o LED. B apaga o LED
-      if (rxValue.find("A") != -1) { 
+      if (rxValue.find("A") != -1) {
         Serial.println("Turning ON!");
       }
       else if (rxValue.find("B") != -1) {
         Serial.println("Turning OFF!");
-
       }
-}
-void Ble::con(){
-  Serial.begin(115200);
- 
-  // Create the BLE Device
-  BLEDevice::init("ESP32 DHT11"); // Give it a name
- 
-  // Configura o dispositivo como Servidor BLE
-  BLEServer *pServer = BLEDevice::createServer();
-  pServer->setCallbacks(new BleServerCallbacks());
- 
-  // Cria o servico UART
-  BLEService *pService = pServer->createService(SERVICE_UUID);
- 
-  // Cria uma Característica BLE para envio dos dados
-  pCharacteristic = pService->createCharacteristic(
-                      DHTDATA_CHAR_UUID,
-                      BLECharacteristic::PROPERTY_NOTIFY
-                    );
-                       
-  pCharacteristic->addDescriptor(new BLE2902());
- 
-  // cria uma característica BLE para recebimento dos dados
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID_RX,
-                                         BLECharacteristic::PROPERTY_WRITE
-                                       );
- 
-  pCharacteristic->setCallbacks(new BleCallbacks());
- 
-  // Inicia o serviço
-  pService->start();
- 
-  // Inicia a descoberta do ESP32
-  pServer->getAdvertising()->start();
-  Serial.println("Esperando um cliente se conectar...");
-
 }
