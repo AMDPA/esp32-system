@@ -11,6 +11,7 @@
 #include <string>
 #include <StringSplitter.h>
 
+#include "../modules/LeitorCartao/LeitorCartao.h"
 #include "Hora.h"
 
 #define SERVICE_UUID           "f9d4045a-ff8b-11eb-9a03-0242ac130003"

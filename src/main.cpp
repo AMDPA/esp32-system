@@ -1,161 +1,78 @@
 #include <Arduino.h>
-#include <string.h>
 
-//#include "classes/Chuva.h"
-/*#include "classes/modules/CO2/Cjmcu.h"
+#include "classes/modules/Chuva/Chuva.h"
+#include "classes/modules/CO2/Cjmcu.h"
 #include "classes/modules/Hidrogenio/Hidrogenio.h"
 #include "classes/modules/Luminosidade/Luminosidade.h"
 #include "classes/modules/TempUmidAr/TempUmidAr.h"
 #include "classes/modules/UmidSolo/UmidSolo.h"
-
 #include "classes/modules/LeitorCartao/LeitorCartao.h"
+
 #include "classes/system/Json.h"
-//#include "classes/Ble.h"
+#include "classes/system/Ble.h"
+#include "classes/system/Hora.h"
+#include "classes/system/Ble.h"
 
-Cjmcu cjmcu;
-Hidrogenio hidrogenio;
-Luminosidade luminosidade;
-TempUmidAr tempUmidAr;
-UmidSolo umidSolo;
+LeitorCartao _leitorCartao;
+Cjmcu _cjmcu;
+Hidrogenio _hidrogenio;
+Luminosidade _luminosidade;
+TempUmidAr _tempUmidAr;
+UmidSolo _umidSolo;
 
-LeitorCartao leitorCartao;
+Ble _ble;
+Hora _hora;
 
 unsigned long millisLeitura = millis();
+bool deviceConnected = false;
 
 void setup(){
     Serial.begin(115200);
 
-    //leitorCartao.initSD();
+    _leitorCartao.initSD();
+    _cjmcu.init();
+    _hidrogenio.init();
+    _luminosidade.init();
+    _tempUmidAr.init();
+    _umidSolo.init();
 
-    cjmcu.init();
-    hidrogenio.init();
-    luminosidade.init();
-    tempUmidAr.init();
-    umidSolo.init();
+    _ble.init();
+}
 
-    /*if(!leitorCartao.fileExists("/medicoes4.csv")){
-        leitorCartao.createFile("/medicoes4.csv");
-        leitorCartao.writeFile("/medicoes4.csv", "cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
-    }*/
-//}
+void loop(){
+    if(!_leitorCartao.fileExists("/" + _hora.getData() + ".csv")){
+        _leitorCartao.createFile("/" + _hora.getData() + ".csv");
+        _leitorCartao.writeFile("/" + _hora.getData() + ".csv", "unix, data, cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
+    }
 
-/*void loop(){
-
-    cjmcu.update();
-    hidrogenio.update();
-    luminosidade.update();
-    tempUmidAr.update();
-    umidSolo.update();
+    _cjmcu.update();
+    _hidrogenio.update();
+    _luminosidade.update();
+    _tempUmidAr.update();
+    _umidSolo.update();
 
     if(millis() - millisLeitura >= 2000 ){
         String msg = "";
 
-        msg += String(cjmcu.getEco2()) + ", ";
-        msg += String(cjmcu.getEtvoc()) + ", ";
+        msg += String(_hora.getUnixTimeStamp()) + ", ";
+        msg += String(_hora.getDataFull()) + ", ";
 
-        msg += String(hidrogenio.getPpm()) + ", ";
+        msg += String(_cjmcu.getEco2()) + ", ";
+        msg += String(_cjmcu.getEtvoc()) + ", ";
 
-        msg += String(luminosidade.getPercent()) + ", ";
+        msg += String(_hidrogenio.getPpm()) + ", ";
 
-        msg += String(tempUmidAr.getHumidity()) + ", ";
-        msg += String(tempUmidAr.getTemperature()) + ", ";
-        msg += String(tempUmidAr.getHeatIndex()) + ", ";
+        msg += String(_luminosidade.getPercent()) + ", ";
 
-        msg += String(umidSolo.getValue()) + "\n";
+        msg += String(_tempUmidAr.getHumidity()) + ", ";
+        msg += String(_tempUmidAr.getTemperature()) + ", ";
+        msg += String(_tempUmidAr.getHeatIndex()) + ", ";
 
-        //leitorCartao.writeFile("/medicoes4.csv", msg);
-        Serial.println(msg);
+        msg += String(_umidSolo.getValue()) + "\n";
+
+        _leitorCartao.writeFile("/" + _hora.getData() + ".csv", msg);
         millisLeitura = millis();
-    }
-}*/
 
-/*
-    Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleServer.cpp
-    Ported to Arduino ESP32 by Evandro Copercini
-    updates by chegewara
-*/
-
-/*#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-
-// See the following for generating UUIDs:
-// https://www.uuidgenerator.net/
-
-#define SERVICE_UUID        "5bc6b4f0-ff87-11eb-9a03-0242ac130003"
-#define CHARACTERISTIC_UUID "68c3bf90-ff87-11eb-9a03-0242ac130003"
-
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Starting BLE work!");
-
-  BLEDevice::init("ESP32");
-  BLEServer *pServer = BLEDevice::createServer();
-  BLEService *pService = pServer->createService(SERVICE_UUID);
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE
-                                       );
-
-  pCharacteristic->setValue("Hello World says Neil");
-  pService->start();
-  // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
-  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(SERVICE_UUID);
-  pAdvertising->setScanResponse(true);
-  pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-  pAdvertising->setMinPreferred(0x12);
-  BLEDevice::startAdvertising();
-  Serial.println("Characteristic defined! Now you can read it in your phone!");
-
-  int cont = 0;
-  while(true){
-      cont++;
-      pCharacteristic->setValue(cont);
-      delay(2000);
-  }
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  delay(2000);
-}*/
-
-#include "classes/system/Ble.h"
-
-Ble ble;
-bool deviceConnected = false;
-
-void TaskRunningOnAppCore(void *arg) {
-    while(1) {
-       Serial.print("medições");
-       vTaskDelay(5000);
+        Serial.println(msg);
     }
 }
-
-void TaskRunningOnProtocolCore(void *arg) {
-    while(1) {
-        Serial.println("BLE");
-        if (deviceConnected) {
-            ble.sendValue("TESTANDOOOOOOOO");
-        }
-
-        vTaskDelay(2000);
-    }
-}
-
-void setup(){
-    Serial.begin(115200);
-
-    ble = Ble();
-    ble.init();
-
-    xTaskCreatePinnedToCore(TaskRunningOnProtocolCore, "TaskOnPro", 2048, NULL, 8, NULL, PRO_CPU_NUM);
-}
-
-void loop(){
-    Serial.println(deviceConnected);
-    delay(2500);
-}
-

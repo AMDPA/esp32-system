@@ -11,11 +11,19 @@ int Hora::getUnixTimeStamp(){
     return tt;
 }
 
-String Hora::getData(){
+String Hora::getDataFull(){
     time_t tt = time(NULL);
     data = *gmtime(&tt);
     char data_formatada[64];
     strftime(data_formatada, 64, "%Y-%m-%d %H:%M:%S", &data);
+
+    return data_formatada;
+}
+String Hora::getData(){
+     time_t tt = time(NULL);
+    data = *gmtime(&tt);
+    char data_formatada[64];
+    strftime(data_formatada, 64, "%Y-%m-%d", &data);
 
     return data_formatada;
 }

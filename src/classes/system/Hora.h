@@ -17,6 +17,7 @@ private:
 public:
     void setUnixTimeStamp(int unixTimeStamp);
     int getUnixTimeStamp();
+    String getDataFull();
     String getData();
 };
 
