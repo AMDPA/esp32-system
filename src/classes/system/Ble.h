@@ -9,7 +9,6 @@
 #include <BLEServer.h>
 #include <iostream>
 #include <string>
-#include <StringSplitter.h>
 
 #include "../modules/LeitorCartao/LeitorCartao.h"
 
