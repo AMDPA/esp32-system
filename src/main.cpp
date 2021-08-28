@@ -9,7 +9,6 @@
 #include "classes/modules/LeitorCartao/LeitorCartao.h"
 
 #include "classes/system/Json.h"
-#include "classes/system/Ble.h"
 #include "classes/system/Hora.h"
 #include "classes/system/Server.h"
 
@@ -20,7 +19,7 @@ Luminosidade _luminosidade;
 TempUmidAr _tempUmidAr;
 UmidSolo _umidSolo;
 
-Ble _ble;
+//Ble _ble;
 Hora _hora;
 Json _json;
 ServerESP32 _server;
@@ -42,11 +41,11 @@ void setup(){
             _hora.updateHoraRede();
         }
         else{
-            _server.init(doc["REDE_ADDR"], doc["REDE_PASS"], true);
+             _server.init(doc["REDE_ADDR"], doc["REDE_PASS"], true);
         }
     }
     else{
-        _ble.init();
+        
     }
 
     _cjmcu.init();
@@ -55,7 +54,7 @@ void setup(){
     _tempUmidAr.init();
     _umidSolo.init();
 
-    _ble.init();
+    
 }
 
 void loop(){
