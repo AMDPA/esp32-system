@@ -1,32 +1,21 @@
-/*#ifndef TempSolo_h
-#define TempSolo_h
-#include "../classes/LeitorCartao.h"
+#ifndef ServerESP32_h
+#define ServerESP32_h
+
+#include <Arduino.h>
 #include <WiFi.h>
+#include <WebServer.h>
 
-WiFiServer server(80);
+
 class ServerESP32
-{   
-private:
-    const char* ssid     = "MineStation";
-    const char* password = "minestation123";
-    
-    String header;
-    
+{
+
 public:
-    ServerESP32(){
-        WiFi.softAP(ssid, password);
-    }
+    WiFiServer server = WiFiServer(80);
 
-    void iniciarServidor(){
-        server.begin();
-    }
+    void init(String addr, String pass, bool ap = false);
+    void finish();
+    void serverPrint(String data);
 
-    IPAddress getIp(){
-        return WiFi.softAPIP();
-    }
-
-
-  
 };
 
-#endif*/
+#endif
