@@ -2,35 +2,23 @@
 
 void Ble::init(){
   BLEDevice::init("ESP32 AMACPA~AMDPA");
-  BLEDevice::setMTU(128);
+
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
   BLEService *pService = pServer->createService(SERVICE_UUID);
 
-  //Envio de dados
-  pCharacteristic = pService->createCharacteristic(DHTDATA_CHAR_UUID, BLECharacteristic::PROPERTY_NOTIFY);
-  pCharacteristic->addDescriptor(new BLE2902());
+  BLECharacteristic *opCharacteristic = pService->createCharacteristic(MODO_OP_UUID, BLECharacteristic::PROPERTY_WRITE);
+  opCharacteristic->setCallbacks(new MyCallbacks());
 
-  //Ajusta Hora
-  BLECharacteristic *hourCaracteristic = pService->createCharacteristic(HOUR_UUID, BLECharacteristic::PROPERTY_WRITE);
-  hourCaracteristic->setCallbacks(new MyCallbacks());
+  BLECharacteristic *redeAddrCharacteristic = pService->createCharacteristic(REDE_ADDR_UUID, BLECharacteristic::PROPERTY_WRITE);
+  redeAddrCharacteristic->setCallbacks(new MyCallbacks());
 
-  //Definir modo de Operação
-  /*BLECharacteristic *operationCaracteristic = pService->createCharacteristic(OPERATION_UUID, BLECharacteristic::PROPERTY_WRITE);
-  operationCaracteristic->setCallbacks(new MyCallbacks());*/
+  BLECharacteristic *redePassCharacteristic = pService->createCharacteristic(REDE_PASS_UUID, BLECharacteristic::PROPERTY_WRITE);
+  redePassCharacteristic->setCallbacks(new MyCallbacks());
 
   pService->start();
   pServer->getAdvertising()->start();
-}
-
-void Ble::sendValue(std::string value){
-  Serial.println("BLE");
-  pCharacteristic->setValue(value);
-  pCharacteristic->notify(); // Envia o valor para o aplicativo!
-  Serial.print("*** Dado enviado: ");
-  Serial.print(String(value.c_str()));
-  Serial.println(" ***");
 }
 
 void MyServerCallbacks::onConnect(BLEServer* pServer){
@@ -45,34 +33,13 @@ void MyCallbacks::onWrite(BLECharacteristic *pCharacteristic){
   std::string rxValue = pCharacteristic->getValue();
   std::string cUUID = pCharacteristic->getUUID().toString();
 
-  if(cUUID == HOUR_UUID){
-    Hora hora;
-    hora.setUnixTimeStamp(String(rxValue.c_str()).toInt());
+  if(cUUID == MODO_OP_UUID){
+
   }
- /* else if(cUUID == OPERATION_UUID){
-    String d = String(rxValue.c_str());
-    StringSplitter *splitter = new StringSplitter(d, ',', 3);
+  else if(cUUID == REDE_ADDR_UUID){
 
-    if(String(splitter->getItemAtIndex(0)) == "WIFI"){
-      String redeNome =  splitter->getItemAtIndex(1);
-      String redePassword =  splitter->getItemAtIndex(2);
-    }
-  }*/
-  else if(cUUID == ATUA_UUID){
-    String d = String(rxValue.c_str());
-    StringSplitter *splitter = new StringSplitter(d, ',', 2);
+  }
+  else if(cUUID == REDE_PASS_UUID){
 
-    LeitorCartao lC;
-    lC.initSD();
-
-    if(String(splitter->getItemAtIndex(0)) == "DIA"){
-      String time = String(splitter->getItemAtIndex(1));
-      String msg = lC.readFile("/" + time + ".csv");
-      pCharacteristic->setValue(msg.c_str());
-      pCharacteristic->notify();
-    }
-    /*else{
-      int id = String(splitter->getItemAtIndex(1)).toInt();
-    }*/
   }
 }
