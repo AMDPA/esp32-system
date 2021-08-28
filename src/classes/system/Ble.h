@@ -12,19 +12,15 @@
 #include <StringSplitter.h>
 
 #include "../modules/LeitorCartao/LeitorCartao.h"
-#include "Hora.h"
 
-#define SERVICE_UUID           "f9d4045a-ff8b-11eb-9a03-0242ac130003"
-#define CHARACTERISTIC_UUID_RX "f9d40860-ff8b-11eb-9a03-0242ac130003"
-#define DHTDATA_CHAR_UUID      "f9d40982-ff8b-11eb-9a03-0242ac130003"
-#define HOUR_UUID              "9fbc90f6-01f0-11ec-9a03-0242ac130003"
-#define OPERATION_UUID         "fa0b0f5a-01f6-11ec-9a03-0242ac130003"
-#define ATUA_UUID              "654b1b18-01ff-11ec-9a03-0242ac130003"
+#define SERVICE_UUID           "3f247b34-07fc-11ec-9a03-0242ac130003"
+#define CHARACTERISTIC_UUID_RX "3f247d64-07fc-11ec-9a03-0242ac130003"
+#define MODO_OP_UUID           "3f247e4a-07fc-11ec-9a03-0242ac130003"
+#define REDE_ADDR_UUID         "3f24803e-07fc-11ec-9a03-0242ac130003"
+#define REDE_PASS_UUID         "3f248110-07fc-11ec-9a03-0242ac130003"
 
 extern bool deviceConnected;
 class Ble{
-    private:
-        BLECharacteristic *pCharacteristic;
 
     public:
         void init();
