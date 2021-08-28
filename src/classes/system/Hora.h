@@ -8,6 +8,8 @@
 #include <esp_system.h>
 #include <time.h>
 #include <sys/time.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 class Hora
 {
@@ -16,6 +18,7 @@ private:
 
 public:
     void setUnixTimeStamp(int unixTimeStamp);
+    void updateHoraRede();
     int getUnixTimeStamp();
     String getDataFull();
     String getData();

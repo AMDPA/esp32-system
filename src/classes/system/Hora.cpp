@@ -6,6 +6,17 @@ void Hora::setUnixTimeStamp(int unixTimeStamp){
     settimeofday(&tv, NULL);
 }
 
+void Hora::updateHoraRede(){
+    WiFiUDP ntpUDP;
+    NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
+    timeClient.begin();
+    timeClient.update();
+
+    timeval tv;
+    tv.tv_sec = timeClient.getEpochTime();
+    settimeofday(&tv, NULL);
+}
+
 int Hora::getUnixTimeStamp(){
     time_t tt = time(NULL);
     return tt;

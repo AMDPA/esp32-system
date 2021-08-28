@@ -11,7 +11,7 @@
 #include "classes/system/Json.h"
 #include "classes/system/Ble.h"
 #include "classes/system/Hora.h"
-#include "classes/system/Ble.h"
+#include "classes/system/Server.h"
 
 LeitorCartao _leitorCartao;
 Cjmcu _cjmcu;
@@ -22,6 +22,8 @@ UmidSolo _umidSolo;
 
 Ble _ble;
 Hora _hora;
+Json _json;
+ServerESP32 _server;
 
 unsigned long millisLeitura = millis();
 bool deviceConnected = false;
@@ -30,6 +32,23 @@ void setup(){
     Serial.begin(115200);
 
     _leitorCartao.initSD();
+
+    if(_leitorCartao.fileExists("/settings.json")){
+        String msg = _leitorCartao.readFile("/settings.json");
+        StaticJsonDocument<300> doc = _json.deserialize(msg);
+
+        if(doc["MODO_OP"] == "REMOTO"){
+            _server.init(doc["REDE_ADDR"], doc["REDE_PASS"]);
+            _hora.updateHoraRede();
+        }
+        else{
+            _server.init(doc["REDE_ADDR"], doc["REDE_PASS"], true);
+        }
+    }
+    else{
+        _ble.init();
+    }
+
     _cjmcu.init();
     _hidrogenio.init();
     _luminosidade.init();
@@ -40,18 +59,13 @@ void setup(){
 }
 
 void loop(){
-    if(!_leitorCartao.fileExists("/" + _hora.getData() + ".csv")){
-        _leitorCartao.createFile("/" + _hora.getData() + ".csv");
-        _leitorCartao.writeFile("/" + _hora.getData() + ".csv", "unix, data, cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
-    }
-
-    _cjmcu.update();
-    _hidrogenio.update();
-    _luminosidade.update();
-    _tempUmidAr.update();
-    _umidSolo.update();
-
     if(millis() - millisLeitura >= 2000 ){
+        _cjmcu.update();
+        _hidrogenio.update();
+        _luminosidade.update();
+        _tempUmidAr.update();
+        _umidSolo.update();
+
         String msg = "";
 
         msg += String(_hora.getUnixTimeStamp()) + ", ";
@@ -69,6 +83,11 @@ void loop(){
         msg += String(_tempUmidAr.getHeatIndex()) + ", ";
 
         msg += String(_umidSolo.getValue()) + "\n";
+
+        if(!_leitorCartao.fileExists("/" + _hora.getData() + ".csv")){
+            _leitorCartao.createFile("/" + _hora.getData() + ".csv");
+            _leitorCartao.writeFile("/" + _hora.getData() + ".csv", "unix, data, cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
+        }
 
         _leitorCartao.writeFile("/" + _hora.getData() + ".csv", msg);
         millisLeitura = millis();
