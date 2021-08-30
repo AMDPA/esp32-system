@@ -8,7 +8,7 @@ void Hora::setUnixTimeStamp(int unixTimeStamp){
 
 void Hora::updateHoraRede(){
     WiFiUDP ntpUDP;
-    NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
+    NTPClient timeClient(ntpUDP, "a.ntp.br", 3600, 60000);
     timeClient.begin();
     timeClient.update();
 
