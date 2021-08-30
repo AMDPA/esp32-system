@@ -10,8 +10,8 @@ void LeitorCartao::createFile(String path){
     file.close();
 }
 
-void LeitorCartao::writeFile(String path, String msg){
-    File file = SD.open(path, FILE_APPEND);
+void LeitorCartao::writeFile(String path, String msg, bool reset){
+    File file = SD.open(path, (reset ? FILE_WRITE : FILE_APPEND));
     file.print(msg);
     file.close();
 }

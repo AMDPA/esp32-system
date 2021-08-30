@@ -26,7 +26,7 @@ private:
 public:
   void initSD();
   void createFile(String path);
-  void writeFile(String path, String msg);
+  void writeFile(String path, String msg, bool reset = false);
   bool fileExists(String path);
   String readFile(String path);
 };
