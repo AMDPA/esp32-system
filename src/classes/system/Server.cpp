@@ -29,9 +29,27 @@ void ServerESP32::call(){
         request->send(200, "application/json", "{\"Info\":\"AMACPA and AMDPA cientifique project\"}");
     });
 
+    server.on("^\\/api\\/hora\\/([0-9]+)$", HTTP_POST, [] (AsyncWebServerRequest *request){
+        Hora h;
+        String s = request->pathArg(0);
+        h.setUnixTimeStamp(s.toInt());
+
+        request->send(200, "application/json", "{\"msg\":\"ok\"}");
+    });
+
     server.on("^\\/api\\/data\\/([0-9]+)\\/([0-9]+)\\/([0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest *request){
         String data[3] = {request->pathArg(0), request->pathArg(1), request->pathArg(2)};
-        request->send(200, "application/json", data[0]);
+
+        LeitorCartao l;
+        l.initSD();
+
+        if(l.fileExists("/" + data[0] + "-" + data[1] + "-" + data[2] + ".json")){
+            String msg = l.readFile("/" + data[0] + "-" + data[1] + "-" + data[2] + ".json");
+            request->send(200, "application/json", msg);
+        }
+        else{
+            request->send(404, "application/json", "{'msg': 'not_found'}");
+        }
     });
 
     server.on("/api/at/", HTTP_POST, [] (AsyncWebServerRequest *request){

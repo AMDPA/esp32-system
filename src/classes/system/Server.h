@@ -6,6 +6,7 @@
 #include <ESPAsyncWebServer.h>
 
 #include "Json.h"
+#include "Hora.h"
 #include "../modules/LeitorCartao/LeitorCartao.h"
 
 
