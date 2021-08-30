@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "classes/modules/Chuva/Chuva.h"
+/*#include "classes/modules/Chuva/Chuva.h"
 #include "classes/modules/CO2/Cjmcu.h"
 #include "classes/modules/Hidrogenio/Hidrogenio.h"
 #include "classes/modules/Luminosidade/Luminosidade.h"
@@ -8,7 +8,6 @@
 #include "classes/modules/UmidSolo/UmidSolo.h"
 #include "classes/modules/LeitorCartao/LeitorCartao.h"
 
-#include "classes/system/Json.h"
 #include "classes/system/Hora.h"
 #include "classes/system/Server.h"
 
@@ -24,28 +23,37 @@ Hora _hora;
 Json _json;
 ServerESP32 _server;
 
+String m, rd, rp, msg = "";
+
 unsigned long millisLeitura = millis();
-bool deviceConnected = false;
 
 void setup(){
     Serial.begin(115200);
 
     _leitorCartao.initSD();
 
-    if(_leitorCartao.fileExists("/settings.json")){
-        String msg = _leitorCartao.readFile("/settings.json");
-        StaticJsonDocument<300> doc = _json.deserialize(msg);
+    StaticJsonDocument<300> doc;
 
-        if(doc["MODO_OP"] == "REMOTO"){
-            _server.init(doc["REDE_ADDR"], doc["REDE_PASS"]);
+    if(_leitorCartao.fileExists("/settings.json")){
+
+        m = doc["MODO_OP"].as<String>();
+        rd = doc["REDE_ADDR"].as<String>();
+        rp = doc["REDE_PASS"].as<String>();
+
+        if(m.equals("REMOTO")){
+            _server.init(rd, rp);
             _hora.updateHoraRede();
-        }
-        else{
-             _server.init(doc["REDE_ADDR"], doc["REDE_PASS"], true);
         }
     }
     else{
-        
+        doc["MODO_OP"] = "LOCAL";
+        doc["REDE_ADDR"] = "esp32 001";
+        doc["REDE_PASS"] = "ESPDEFAULT";
+
+        String r = _json.serialize(doc);
+        _leitorCartao.createFile("/settings.json");
+        _leitorCartao.writeFile("/settings.json", r, true);
+        ESP.restart();
     }
 
     _cjmcu.init();
@@ -54,43 +62,72 @@ void setup(){
     _tempUmidAr.init();
     _umidSolo.init();
 
-    
 }
 
 void loop(){
-    if(millis() - millisLeitura >= 2000 ){
+    if(millis() - millisLeitura >= 10000 ){
+        _server.finish();
+
         _cjmcu.update();
         _hidrogenio.update();
         _luminosidade.update();
         _tempUmidAr.update();
         _umidSolo.update();
 
-        String msg = "";
-
-        msg += String(_hora.getUnixTimeStamp()) + ", ";
-        msg += String(_hora.getDataFull()) + ", ";
-
-        msg += String(_cjmcu.getEco2()) + ", ";
-        msg += String(_cjmcu.getEtvoc()) + ", ";
-
-        msg += String(_hidrogenio.getPpm()) + ", ";
-
-        msg += String(_luminosidade.getPercent()) + ", ";
-
-        msg += String(_tempUmidAr.getHumidity()) + ", ";
-        msg += String(_tempUmidAr.getTemperature()) + ", ";
-        msg += String(_tempUmidAr.getHeatIndex()) + ", ";
-
-        msg += String(_umidSolo.getValue()) + "\n";
-
-        if(!_leitorCartao.fileExists("/" + _hora.getData() + ".csv")){
-            _leitorCartao.createFile("/" + _hora.getData() + ".csv");
-            _leitorCartao.writeFile("/" + _hora.getData() + ".csv", "unix, data, cjmcu_co2, cjmcu_etvoc, hidrogenio_ppm, luminosidade_percent, temUmidAr_humidity, tempUmidAr_temperature, tempUmidAr_heatIndex, umidSolo_percent\n");
+        if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
+            _leitorCartao.createFile("/" + _hora.getData() + ".json");
+            //_leitorCartao.writeFile("/" + _hora.getData() + ".json", "[{\"hora\": \"f\",\"cjmcu\": {\"eco2\": 0.0,\"etvoc\": 0.0},\"hidrogenio\": 0.0,\"luminosidade\": 0.0,\"tempUmidAr\": {\"umidade\": 0.0,\"temperatura\": 0.0,\"heatIndex\": 0.0}}]");
         }
 
-        _leitorCartao.writeFile("/" + _hora.getData() + ".csv", msg);
-        millisLeitura = millis();
+        msg = _leitorCartao.readFile("/" + _hora.getData() + ".json");
 
+        DynamicJsonDocument doc1(24576);
+
+        JsonObject doc_0 = doc1.createNestedObject(String(_hora.getUnixTimeStamp()));
+        doc_0["hora"] = _hora.getDataFull();
+
+        JsonObject doc_0_cjmcu = doc_0.createNestedObject("cjmcu");
+        doc_0_cjmcu["eco2"] = _cjmcu.getEco2();
+        doc_0_cjmcu["etvoc"] = _cjmcu.getEtvoc();
+
+        doc_0["hidrogenio"] = _hidrogenio.getPpm();
+        doc_0["luminosidade"] = _luminosidade.getPercent();
+
+        JsonObject doc_0_tempUmidAr = doc_0.createNestedObject("tempUmidAr");
+        doc_0_tempUmidAr["umidade"] = _tempUmidAr.getHumidity();
+        doc_0_tempUmidAr["temperatura"] = _tempUmidAr.getTemperature();
+        doc_0_tempUmidAr["heatIndex"] = _tempUmidAr.getHeatIndex();
+
+        if(msg.length() == 0){
+            serializeJson(doc1, msg);
+        }
+        else{
+            DynamicJsonDocument doc(24576);
+            DynamicJsonDocument docd(24576);
+
+            deserializeJson(doc, msg);
+
+            _json.merge(docd, doc);
+            _json.merge(docd, doc1);
+
+            serializeJson(docd, msg);
+        }
+
+        _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg, true);
+
+        if(m.equals("REMOTO")){
+            _server.init(rd, rp);
+        }
         Serial.println(msg);
+        Serial.println("\n\n\n\n");
+        millisLeitura = millis();
     }
+}*/
+
+void setup(){
+    Serial.begin(115200);
+}
+
+void loop(){
+    
 }

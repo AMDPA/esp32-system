@@ -11,7 +11,12 @@ void LeitorCartao::createFile(String path){
 }
 
 void LeitorCartao::writeFile(String path, String msg, bool reset){
-    File file = SD.open(path, (reset ? FILE_WRITE : FILE_APPEND));
+    if(reset){
+      SD.remove(path);
+      createFile(path);
+    }
+
+    File file = SD.open(path, FILE_APPEND);
     file.print(msg);
     file.close();
 }
@@ -28,8 +33,7 @@ String LeitorCartao::readFile(String path){
 }
 
 bool LeitorCartao::fileExists(String path){
-    File file = SD.open(path, FILE_READ);
-    if(file){
+    if(SD.exists(path)){
         return true;
     }
     return false;

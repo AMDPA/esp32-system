@@ -3,18 +3,22 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WebServer.h>
+#include <ESPAsyncWebServer.h>
+
+#include "Json.h"
+#include "../modules/LeitorCartao/LeitorCartao.h"
 
 
 class ServerESP32
 {
 
 public:
-    WiFiServer server = WiFiServer(80);
+    AsyncWebServer server = AsyncWebServer(80);
 
     void init(String addr, String pass, bool ap = false);
     void finish();
     void serverPrint(String data);
+    void call();
 
 };
 

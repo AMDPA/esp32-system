@@ -13,3 +13,15 @@ StaticJsonDocument<300> Json::deserialize(String json){
 
     return doc;
 }
+
+void Json::merge(JsonDocument& dst, const JsonDocument& src) {
+   for (auto kvp : src.as<JsonObjectConst>()) {
+        dst[kvp.key()] = kvp.value();
+    }
+
+   String msg = "";
+   serializeJson(dst, msg);
+
+   Serial.println(msg);
+   Serial.println("\n\n\n\n");
+}
