@@ -1,26 +1,14 @@
-/*#ifndef Energia_h
+#ifndef Energia_h
 #define Energia_h
 
 #include <Arduino.h>
-#include <esp_deepsleep.h>
-
+#include "Server.h"
 class Energia
 {
-private:
-    
 public:
-    Energia() {}
-
-    void setModoAtivo(){
-
-    }
-
-    void setDeepSleep(int segundos){    
-        esp_sleep_enable_timer_wakeup (segundos * 1000000); 
-        esp_deep_sleep_start ();
-    }
-
+    esp_sleep_wakeup_cause_t wakeup_reason;
+    void setDeepSleep(int segundos);
+    void reestartSystemTokePin();
 };
 
 #endif
-*/
