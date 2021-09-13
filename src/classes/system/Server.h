@@ -9,17 +9,17 @@
 #include "Hora.h"
 #include "../modules/LeitorCartao/LeitorCartao.h"
 
-
 class ServerESP32
 {
 
 public:
     AsyncWebServer server = AsyncWebServer(80);
+    String m, rd, rp;
 
-    void init(String addr, String pass, bool ap = false);
+    void init(bool ap = false);
     void finish();
-    void serverPrint(String data);
     void call();
+    void config();
 
 };
 

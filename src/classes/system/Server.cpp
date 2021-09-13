@@ -1,27 +1,64 @@
 #include "Server.h"
 
-void ServerESP32::init(String addr, String pass, bool ap){
-
-    if(!ap){
-        WiFi.begin(addr.c_str(), pass.c_str());
-        while(WiFi.status() != WL_CONNECTED);
-        call();
-        server.begin();
+void ServerESP32::init(bool ap){
+    if(m.length() != 0){
+        if(!ap){
+            //WiFi.mode(WIFI_MODE_STA);
+            WiFi.begin(rd.c_str(),rp.c_str());
+            while(WiFi.status() != WL_CONNECTED);
+        }
+        else{
+            //WiFi.mode(WIFI_MODE_AP);
+            WiFi.softAP(rd.c_str(),rp.c_str());
+        }
     }
     else{
-        WiFi.softAP(addr.c_str(), pass.c_str(), 1, 0, 1);
-        call();
-        server.begin();
+        config();
     }
+
+    call();
+    server.begin();
+}
+
+void ServerESP32::config(){
+    LeitorCartao l;
+    l.initSD();
+
+    StaticJsonDocument<300> doc;
+    if(l.fileExists("/settings.json")){
+
+        String msg = l.readFile("/settings.json");
+        deserializeJson(doc, msg);
+
+        m = doc["MODO_OP"].as<String>();
+        rd = doc["REDE_ADDR"].as<String>();
+        rp = doc["REDE_PASS"].as<String>();
+
+        if(m.equals("REMOTO")){
+            init();
+            Hora h;
+            h.updateHoraRede();
+        }
+        else{
+            init(true);
+        }
+    }
+    else{
+        doc["MODO_OP"] = "LOCAL";
+        doc["REDE_ADDR"] = "esp32 001";
+        doc["REDE_PASS"] = "ESPDEFAULT";
+        JsonESP32 _json;
+        String r = _json.serialize(doc);
+        l.createFile("/settings.json");
+        l.writeFile("/settings.json", r, true);
+        ESP.restart();
+    }
+
 }
 
 void ServerESP32::finish(){
     WiFi.disconnect(true);  // Disconnect from the network
     WiFi.mode(WIFI_OFF);
-}
-
-void ServerESP32::serverPrint(String data){
-
 }
 
 void ServerESP32::call(){
@@ -38,13 +75,11 @@ void ServerESP32::call(){
     });
 
     server.on("^\\/api\\/data\\/([0-9]+)\\/([0-9]+)\\/([0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest *request){
-        String data[3] = {request->pathArg(0), request->pathArg(1), request->pathArg(2)};
-
         LeitorCartao l;
         l.initSD();
 
-        if(l.fileExists("/" + data[0] + "-" + data[1] + "-" + data[2] + ".json")){
-            String msg = l.readFile("/" + data[0] + "-" + data[1] + "-" + data[2] + ".json");
+        if(l.fileExists("/" + request->pathArg(0) + "-" + request->pathArg(1) + "-" + request->pathArg(2) + ".json")){
+            String msg = l.readFile("/" + request->pathArg(0) + "-" + request->pathArg(1) + "-" + request->pathArg(2) + ".json");
             request->send(200, "application/json", msg);
         }
         else{
@@ -62,7 +97,7 @@ void ServerESP32::call(){
 
         String msg = l.readFile("/settings.json");
 
-        Json j;
+        JsonESP32 j;
         StaticJsonDocument<300> doc = j.deserialize(msg);
 
         doc["MODO_OP"] = m;
@@ -74,6 +109,10 @@ void ServerESP32::call(){
         l.writeFile("/settings.json", msg, true);
 
         request->send(200, "application/json", "{\"msg\":\"ok\"}");
+        ESP.restart();
+    });
+
+    server.on("/rst", HTTP_GET, [](AsyncWebServerRequest *request){
         ESP.restart();
     });
 }
