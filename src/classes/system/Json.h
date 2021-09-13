@@ -2,7 +2,7 @@
 
 #include <ArduinoJson.h>
 
-class Json{
+class JsonESP32{
 
 public:
     String serialize(StaticJsonDocument<300> doc);
