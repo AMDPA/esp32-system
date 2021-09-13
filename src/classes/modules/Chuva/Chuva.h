@@ -18,8 +18,8 @@ class Chuva
 {
     
 private: 
-    uint8_t digitalPin = 34;
-    uint8_t analogicoPin = 33;
+    uint8_t digitalPin = 33;
+    uint8_t analogicoPin = 34;
     bool active;
     int analogico;
     int digital;

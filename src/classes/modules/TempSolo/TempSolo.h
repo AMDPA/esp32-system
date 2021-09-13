@@ -3,7 +3,8 @@
 
  Configurações (Padrão):
   - VCC  ---> 3V3
-  - DD   ---> GPIO 12
+  - GND  ---> GND 
+  - DD   ---> GPIO 12 aterrado com resistor 4.7
 */
 
 

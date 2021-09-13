@@ -10,6 +10,7 @@
 
 #include "classes/system/Hora.h"
 #include "classes/system/Server.h"
+#include "classes/system/Energia.h"
 
 LeitorCartao _leitorCartao;
 Cjmcu _cjmcu;
@@ -17,54 +18,37 @@ Hidrogenio _hidrogenio;
 Luminosidade _luminosidade;
 TempUmidAr _tempUmidAr;
 UmidSolo _umidSolo;
+Chuva _chuva;
 
 //Ble _ble;
 Hora _hora;
-Json _json;
+JsonESP32 _json;
 ServerESP32 _server;
-
-String m, rd, rp, msg = "";
+Energia _energia;
 
 void setup(){
     Serial.begin(115200);
 
+    _energia.reestartSystemTokePin();
+    if(_energia.wakeup_reason == ESP_SLEEP_WAKEUP_TOUCHPAD){
+      _server.config();
+      _server.init();
+      while(true);
+    }
+
     _leitorCartao.initSD();
-
-    StaticJsonDocument<300> doc;
-
-    if(_leitorCartao.fileExists("/settings.json")){
-
-        m = doc["MODO_OP"].as<String>();
-        rd = doc["REDE_ADDR"].as<String>();
-        rp = doc["REDE_PASS"].as<String>();
-
-        if(m.equals("REMOTO")){
-            _server.init(rd, rp);
-            _hora.updateHoraRede();
-        }
-    }
-    else{
-        doc["MODO_OP"] = "LOCAL";
-        doc["REDE_ADDR"] = "esp32 001";
-        doc["REDE_PASS"] = "ESPDEFAULT";
-
-        String r = _json.serialize(doc);
-        _leitorCartao.createFile("/settings.json");
-        _leitorCartao.writeFile("/settings.json", r, true);
-        ESP.restart();
-    }
-
     _cjmcu.init();
     _hidrogenio.init();
     _luminosidade.init();
     _tempUmidAr.init();
     _umidSolo.init();
-
 }
 
 void loop(){
+    Serial.print("-");
+   
+    Serial.println("LOOP");
     _server.finish();
-
     _cjmcu.update();
     _hidrogenio.update();
     _luminosidade.update();
@@ -73,10 +57,7 @@ void loop(){
 
     if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
         _leitorCartao.createFile("/" + _hora.getData() + ".json");
-        //_leitorCartao.writeFile("/" + _hora.getData() + ".json", "[{\"hora\": \"f\",\"cjmcu\": {\"eco2\": 0.0,\"etvoc\": 0.0},\"hidrogenio\": 0.0,\"luminosidade\": 0.0,\"tempUmidAr\": {\"umidade\": 0.0,\"temperatura\": 0.0,\"heatIndex\": 0.0}}]");
     }
-
-    msg = _leitorCartao.readFile("/" + _hora.getData() + ".json");
 
     DynamicJsonDocument doc1(24576);
 
@@ -95,8 +76,10 @@ void loop(){
     doc_0_tempUmidAr["temperatura"] = _tempUmidAr.getTemperature();
     doc_0_tempUmidAr["heatIndex"] = _tempUmidAr.getHeatIndex();
 
+    String msg = _leitorCartao.readFile("/" + _hora.getData() + ".json");
+    String msg2;
     if(msg.length() == 0){
-        serializeJson(doc1, msg);
+        serializeJson(doc1, msg2);
     }
     else{
         DynamicJsonDocument doc(24576);
@@ -107,20 +90,20 @@ void loop(){
         _json.merge(docd, doc);
         _json.merge(docd, doc1);
 
-        serializeJson(docd, msg);
+        serializeJson(docd, msg2);
     }
 
-    _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg, true);
+    _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg2, true);
+    Serial.println(msg2);
 
-    if(m.equals("REMOTO")){
-        _server.init(rd, rp);
-
-        String _msg;
+    if(_server.m.equals("REMOTO")){
+        String _msg = msg2;
         serializeJson(doc1, msg);
 
         //Quando tiver um servidor, imprementar o envio de dados aqui. Submeter a var _msg;
     }
 
-    esp_sleep_enable_timer_wakeup ( 60 * 15 * 1000000); 
-    esp_deep_sleep_start ();
+    _energia.setDeepSleep(15 * 60);
+
 }
+
