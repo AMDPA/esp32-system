@@ -1,10 +1,11 @@
 #include "Chuva.h"
 
 void Chuva::init(){
-
+    Serial.println("Chuva::init()");
 }
 
 void Chuva::update(){
+    Serial.println("Chuva::update()");
     int a = touchRead(digital);
     if(a == 0){
             active = true;
@@ -38,14 +39,18 @@ void Chuva::update(){
 }
 
 bool Chuva::getActive(){
+    Serial.println("Chuva::getActive()");
     return active;
 }
 int Chuva::getAnalogico(){
+    Serial.println("Chuva::getAnalogico()");
     return analogico;
 }
 int Chuva::getDigital(){
+    Serial.println("Chuva::getDigital()");
     return digital;
 }
 String Chuva::getStatus(){
+    Serial.println("Chuva::getStatus()");
     return status;
 }

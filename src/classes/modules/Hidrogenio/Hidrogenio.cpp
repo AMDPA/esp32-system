@@ -1,6 +1,7 @@
 #include "Hidrogenio.h"
 
 void Hidrogenio::init(){
+    Serial.println("Hidrogenio::init()");
     MQ8 = MQUnifiedsensor(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
     MQ8.setRegressionMethod(1); 
     MQ8.setA(976.97); MQ8.setB(-0.688); 
@@ -20,10 +21,12 @@ void Hidrogenio::init(){
 }
 
 void Hidrogenio::update(){
+    Serial.println("Hidrogenio::update()");
      MQ8.update();
      ppm = MQ8.readSensor();
 }
 
 float Hidrogenio::getPpm(){
+    Serial.println("Hidrogenio::getPpm()");
     return ppm;
 }

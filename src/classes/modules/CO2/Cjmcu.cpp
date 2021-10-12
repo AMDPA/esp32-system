@@ -1,15 +1,16 @@
 #include "Cjmcu.h"
 
 void Cjmcu::init(){
-    
+    Serial.println("Cjmcu::init()");
     if(!ccs.begin()){
-        while(1);
+        //while(1);
     }
 
     while (!ccs.available());
 }
 
 void Cjmcu::update(){
+    Serial.println("Cjmcu::update()");
     if(ccs.available()){
         if(!ccs.readData()){
             eco2 = ccs.geteCO2();
@@ -19,9 +20,11 @@ void Cjmcu::update(){
 }
 
 uint16_t Cjmcu::getEco2(){
+    Serial.println("Cjmcu::getEco2()");
     return eco2;
 }
 
 uint16_t Cjmcu::getEtvoc(){
+    Serial.println("Cjmcu::getEtvoc()");
     return etvoc;
 }

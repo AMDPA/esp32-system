@@ -3,7 +3,7 @@
 
  Configurações (Padrão):
   - VCC  ---> 3V3
-  - GND  ---> GND
+  - GND  ---> 
   - 1M   ---> 
   - OUT  ---> GPIO 26
   - -V   ---> 
