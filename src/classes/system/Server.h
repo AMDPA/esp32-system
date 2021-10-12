@@ -14,7 +14,11 @@ class ServerESP32
 
 public:
     AsyncWebServer server = AsyncWebServer(80);
-    String m, rd, rp;
+    bool mode;
+    String ssid;
+    String pass;
+    String user;
+    int id_esta;
 
     void init(bool ap = false);
     void finish();
