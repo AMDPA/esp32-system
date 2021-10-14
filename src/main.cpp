@@ -123,8 +123,8 @@ Serial.println(_hora.getUnixTimeStamp());
         http.end();
     }
 
-    //_energia.setDeepSleep(15 * 60);
-    delay(5000);
+    _energia.setDeepSleep(15 * 60);
+    //delay(5000);
 
 }
 
