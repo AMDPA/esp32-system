@@ -4,12 +4,10 @@ void ServerESP32::init(bool ap){
     Serial.println("ServerESP32::init()");
     if(ssid.length() != 0){
         if(!ap){
-            //WiFi.mode(WIFI_MODE_STA);
             WiFi.begin(ssid.c_str(),pass.c_str());
             while(WiFi.status() != WL_CONNECTED);
         }
         else{
-            //WiFi.mode(WIFI_AP);
             WiFi.softAP("AMDPA~AMACPA 001","HNCE5C10");
             WiFi.softAPConfig(IPAddress(192,168,4,1), IPAddress(192,168,4,1), IPAddress(255,255,255,0));
 
@@ -74,20 +72,26 @@ void ServerESP32::call(){
         request->send(200, "application/json", "{\"msg\":\"ok\"}");
     });
 
-    server.on("/api/at/", HTTP_POST, [] (AsyncWebServerRequest *request){
-        StaticJsonDocument<768> doc;
-        LeitorCartao l;
+    server.on("/api/at/",
+            HTTP_POST,
+            [] (AsyncWebServerRequest *request){},
+            NULL,
+            [](AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total){
 
-        String data =  request->getParam("data")->value();
+                StaticJsonDocument<768> doc;
+                LeitorCartao l;
 
-        l.initSD();
-        l.writeFile("/settings.json", data, true);
+                String dataT = String((char *)data);
 
-        request->send(200, "application/json", "{\"msg\":\"ok\"}");
+                l.initSD();
+                l.writeFile("/settings.json", dataT, true);
+
+                request->send(200, "application/json", "{\"msg\":\"ok\"}");
     });
 
     server.on("/rst/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(200, "application/json", "{\"msg\":\"ok\"}");
+        delay(2500);
         ESP.restart();
     });
 
