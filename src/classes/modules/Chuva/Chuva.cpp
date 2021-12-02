@@ -40,17 +40,21 @@ void Chuva::update(){
 
 bool Chuva::getActive(){
     Serial.println("Chuva::getActive()");
+    Serial.println("Chuva::getActive()->VALUE: " + active);
     return active;
 }
 int Chuva::getAnalogico(){
     Serial.println("Chuva::getAnalogico()");
+    Serial.println("Chuva::getAnalogico()->VALUE: " + analogico);
     return analogico;
 }
 int Chuva::getDigital(){
     Serial.println("Chuva::getDigital()");
+    Serial.println("Chuva::getDigital()->VALUE: " + digital);
     return digital;
 }
 String Chuva::getStatus(){
     Serial.println("Chuva::getStatus()");
+    Serial.println("Chuva::getStatus()->VALUE: " + status);
     return status;
 }

@@ -17,10 +17,12 @@ void Cjmcu::update(){
 
 uint16_t Cjmcu::getEco2(){
     Serial.println("Cjmcu::getEco2()");
+    Serial.println("Cjmcu::getEco2()->VALUE: " + eco2);
     return eco2;
 }
 
 uint16_t Cjmcu::getEtvoc(){
     Serial.println("Cjmcu::getEtvoc()");
+    Serial.println("Cjmcu::getEtvoc()->VALUE: "+ etvoc);
     return etvoc;
 }

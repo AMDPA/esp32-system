@@ -22,6 +22,7 @@ private:
   int pHSense = 32;
   int samples = 10;
   int pH_Value;
+  float voltage;
 
 public:
   void init();

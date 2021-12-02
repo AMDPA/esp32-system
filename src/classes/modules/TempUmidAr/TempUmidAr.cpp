@@ -14,15 +14,18 @@ void TempUmidAr::update(){
 }
 float TempUmidAr::getHumidity(){
     Serial.println("TempUmidAr::getHumidity()");
+    Serial.println("TempUmidAr::getHumidity()->VALUE: " + String(humidity));
     return humidity;
 }
 
 float TempUmidAr::getTemperature(){
     Serial.println("TempUmidAr::getTemperature()");
+    Serial.println("TempUmidAr::getTemperature()->VALUE: " + String(temperature));
     return temperature;
 }
 
 float TempUmidAr::getHeatIndex(){
     Serial.println("TempUmidAr::getHeatIndex()");
+    Serial.println("TempUmidAr::getHeatIndex()->VALUE: " + String(heatIndex));
     return heatIndex;
 }
