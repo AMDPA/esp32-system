@@ -7,7 +7,7 @@ void Luminosidade::init(){
 }
 
 void Luminosidade::update(){
-    Serial.println("Luminosidade::uodate()");
+    Serial.println("Luminosidade::update()");
     value = analogRead(pin);
     percent = map(value, 0, 4095, 0, 100);
 }

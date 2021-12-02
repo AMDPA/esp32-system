@@ -8,10 +8,12 @@
 #include "classes/modules/TempUmidAr/TempUmidAr.h"
 #include "classes/modules/UmidSolo/UmidSolo.h"
 #include "classes/modules/LeitorCartao/LeitorCartao.h"
+#include "classes/modules/PH/Ph.h"
 
 #include "classes/system/Hora.h"
 #include "classes/system/Server.h"
 #include "classes/system/Energia.h"
+
 
 LeitorCartao _leitorCartao;
 Cjmcu _cjmcu;
@@ -20,6 +22,7 @@ Luminosidade _luminosidade;
 TempUmidAr _tempUmidAr;
 UmidSolo _umidSolo;
 Chuva _chuva;
+Ph _ph;
 
 Hora _hora;
 JsonESP32 _json;
@@ -44,12 +47,13 @@ void setup(){
     }
 
     _leitorCartao.initSD();
-    /*_cjmcu.init();
-    _hidrogenio.init();
-    _luminosidade.init();
+    //_cjmcu.init();
+    //_hidrogenio.init();
+   // _luminosidade.init();
     _tempUmidAr.init();
-    _umidSolo.init();
-    _chuva.init();*/
+    //_umidSolo.init();
+   // _chuva.init();
+   //_ph.init();
 }
 
 void loop(){
@@ -57,12 +61,13 @@ Serial.println(_hora.getDataFull());
 Serial.println(_hora.getUnixTimeStamp());
     _server.finish();
 
-    /*_cjmcu.update();
-    _hidrogenio.update();
-    _luminosidade.update();
+    //_cjmcu.update();
+    //_hidrogenio.update();
+    //_luminosidade.update();
     _tempUmidAr.update();
-    _umidSolo.update();
-    _chuva.update();*/
+    //_umidSolo.update();
+    //_chuva.update();
+    _ph.update();
 
     if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
         _leitorCartao.createFile("/" + _hora.getData() + ".json");
@@ -82,7 +87,7 @@ Serial.println(_hora.getUnixTimeStamp());
     ssss["mq8_hidrogenio"] = _hidrogenio.getPpm();
     ssss["mhrd_chuva"] = _chuva.getStatus();
     ssss["a18b20_temperatura"] = 0.0;
-    ssss["ph4502c_ph"] = 0.0;
+    ssss["ph4502c_ph"] = _ph.getPh();
     ssss["mhz19b_co2"] = 0.0;
 
     String msg = _leitorCartao.readFile("/" + _hora.getData() + ".json");
@@ -118,13 +123,13 @@ Serial.println(_hora.getUnixTimeStamp());
         http.addHeader("Estacao", String(_server.id_esta));
 
         int code = http.POST(_msg);
-
+        Serial.println(_msg);
         Serial.println("CODE: " + code);
         http.end();
     }
 
-    _energia.setDeepSleep(15 * 60);
-    //delay(5000);
+   // _energia.setDeepSleep(15 * 60);
+    delay(1000 * 60 * 10);
 
 }
 

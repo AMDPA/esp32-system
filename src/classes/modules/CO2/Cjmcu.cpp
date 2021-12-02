@@ -2,11 +2,7 @@
 
 void Cjmcu::init(){
     Serial.println("Cjmcu::init()");
-    if(!ccs.begin()){
-        //while(1);
-    }
-
-    while (!ccs.available());
+    while (!ccs.begin() && !ccs.available());
 }
 
 void Cjmcu::update(){

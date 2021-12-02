@@ -1,40 +1,32 @@
-/*#include <Arduino.h>
+/*
+ Ph.h - Arquivo incluso no projeto ÀMDPA - 2021
+
+ Configurações (Padrão):
+  - To  ---> 
+  - Do  ---> 
+  - Po  ---> 
+  - G1  ---> 
+  - G2  ---> 
+  - V+  ---> 
+*/
+
 #ifndef Ph_h
 #define Ph_h
 
-#include <Wire.h> 
-int pHSense = NULL;
-int samples = 10;
-float adc_resolution = 4095.0;
+#include <Arduino.h>
+#include <Wire.h>
 
 class Ph
 {
 private:
-    /* data 
+  int pHSense = 32;
+  int samples = 10;
+  int pH_Value;
+
 public:
-    Ph(/* args ){
-
-    }
-
-    void Update(){
-    int measurings=0;
-  for (int i = 0; i < samples; i++)
-  {
-    measurings += analogRead(pHSense);
-    Serial.println(analogRead(pHSense));
-    delay(10);
-  }
-    float voltage = 5 / adc_resolution * (measurings/samples);
-    Serial.println(voltage);
-    Serial.print("pH= ");
-    Serial.println(ph(voltage));
-    delay(1000);
-    }
-
-    float ph (float voltage) {
-  float a = 7 + ((2.5 - voltage) / 0.18);
-  Serial.println(a);
-  return a;
-}
+  void init();
+  void update();
+  float getPh();
 };
-#endif*/
+
+#endif
