@@ -12,7 +12,7 @@ void Ph::update(){
 }
 
 float Ph::getPh(){
-    Serial.println("Ph::getPh()");
+    //Serial.println("Ph::getPh()");
     Serial.println("Ph::getPh()->VALUE: " + String(voltage));
     return voltage;
 }

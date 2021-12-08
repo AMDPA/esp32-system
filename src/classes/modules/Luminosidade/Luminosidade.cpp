@@ -13,13 +13,13 @@ void Luminosidade::update(){
 }
 
 int Luminosidade::getValue(){
-    Serial.println("Luminosidade::getValue()");
+   // Serial.println("Luminosidade::getValue()");
     Serial.println("Luminosidade::getValue()->VALUE: " + value);
     return value;
 }
 
 float Luminosidade::getPercent(){
-    Serial.println("Luminosidade::getPercent()");
+    //Serial.println("Luminosidade::getPercent()");
     Serial.println("Luminosidade::getPercent()->VALUE: " + String(percent));
     return percent;
 }

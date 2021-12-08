@@ -14,7 +14,7 @@ void TempSolo::update(){
 }
 
 float TempSolo::getTemperatura(){
-    Serial.println("TempSolo::getTemperatura()");
+    //Serial.println("TempSolo::getTemperatura()");
     Serial.println("TempSolo::getTemperatura()->VALUE: " + String(temperatura));
     return temperatura;
 }

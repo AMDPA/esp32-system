@@ -32,7 +32,7 @@ Energia _energia;
 void setup(){
     Serial.begin(115200);
 
-    _energia.reestartSystemTokePin();
+   /* _energia.reestartSystemTokePin();
     _server.config();
 
     if(_energia.wakeup_reason == ESP_SLEEP_WAKEUP_TOUCHPAD || _server.user.length() == 0 || _server.id_esta == -1){
@@ -44,29 +44,29 @@ void setup(){
     if(_server.mode){
         _server.init();
         _hora.updateHoraRede();
-    }
+    }*/
 
     _leitorCartao.initSD();
-    //_cjmcu.init();
-    //_hidrogenio.init();
-   // _luminosidade.init();
+    _cjmcu.init();
+    _hidrogenio.init();
+    _luminosidade.init();
     _tempUmidAr.init();
-    //_umidSolo.init();
-   // _chuva.init();
-   //_ph.init();
+    _umidSolo.init();
+    _chuva.init();
+    _ph.init();
 }
 
 void loop(){
-Serial.println(_hora.getDataFull());
-Serial.println(_hora.getUnixTimeStamp());
+    Serial.println(_hora.getDataFull());
+    Serial.println(_hora.getUnixTimeStamp());
     _server.finish();
 
-    //_cjmcu.update();
-    //_hidrogenio.update();
-    //_luminosidade.update();
+    _cjmcu.update();
+    _hidrogenio.update();
+    _luminosidade.update();
     _tempUmidAr.update();
-    //_umidSolo.update();
-    //_chuva.update();
+    _umidSolo.update();
+    _chuva.update();
     _ph.update();
 
     if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
@@ -107,7 +107,7 @@ Serial.println(_hora.getUnixTimeStamp());
         serializeJson(docd, msg2);
     }
 
-    _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg2, true);
+   /* _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg2, true);
 
     if(_server.mode){
         String _msg;
@@ -130,5 +130,8 @@ Serial.println(_hora.getUnixTimeStamp());
 
    // _energia.setDeepSleep(15 * 60);
     delay(1000 * 60 * 10);
+    */
+
+   delay(5000);
 
 }
