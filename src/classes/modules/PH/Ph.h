@@ -4,10 +4,10 @@
  Configurações (Padrão):
   - To  ---> 
   - Do  ---> 
-  - Po  ---> 
+  - Po  ---> GPIO32
   - G1  ---> 
-  - G2  ---> 
-  - V+  ---> 
+  - G2  ---> GND
+  - V+  ---> 5v
 */
 
 #ifndef Ph_h

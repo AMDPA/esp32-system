@@ -29,6 +29,8 @@ public:
   void writeFile(String path, String msg, bool reset = false);
   bool fileExists(String path);
   String readFile(String path);
+  File readFile(String path, bool a);
+  void delet(String path);
 };
 
 #endif

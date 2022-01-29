@@ -36,10 +36,21 @@ String LeitorCartao::readFile(String path){
      return data;
 }
 
+File LeitorCartao::readFile(String path, bool a){
+    Serial.println("LeitorCartao::readFile(true)");
+    File file = SD.open(path, FILE_READ);
+
+    return file;
+}
+
 bool LeitorCartao::fileExists(String path){
     Serial.println("LeitorCartao::fileExists()");
     if(SD.exists(path)){
         return true;
     }
     return false;
+}
+
+void LeitorCartao::delet(String path){
+    SD.remove(path);
 }

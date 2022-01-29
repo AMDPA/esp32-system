@@ -40,34 +40,31 @@ void setup(){
         while(true);
     }
 
-    Serial.println("SERVER MODE: " + String(_server.mode));
     if(_server.mode){
         _server.init();
-        _hora.updateHoraRede();
+        //_hora.updateHoraRede(); COmo a hora vem do disposito e a estação se mantem conectada... desencessario a atualizaçõ
     }
 
     _leitorCartao.initSD();
     //_cjmcu.init();
     //_hidrogenio.init();
    // _luminosidade.init();
-    _tempUmidAr.init();
+    //_tempUmidAr.init();
     //_umidSolo.init();
    // _chuva.init();
    //_ph.init();
 }
 
 void loop(){
-Serial.println(_hora.getDataFull());
-Serial.println(_hora.getUnixTimeStamp());
     _server.finish();
 
     //_cjmcu.update();
     //_hidrogenio.update();
     //_luminosidade.update();
-    _tempUmidAr.update();
+    //_tempUmidAr.update();
     //_umidSolo.update();
     //_chuva.update();
-    _ph.update();
+    //_ph.update();
 
     if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
         _leitorCartao.createFile("/" + _hora.getData() + ".json");
@@ -123,12 +120,32 @@ Serial.println(_hora.getUnixTimeStamp());
         http.addHeader("Estacao", String(_server.id_esta));
 
         int code = http.POST(_msg);
-        Serial.println(_msg);
-        Serial.println("CODE: " + code);
+
+       if(code != 201){
+           if(!_leitorCartao.fileExists("/enviardepois.txt")){
+                _leitorCartao.createFile("/enviardepois.txt");
+            }
+
+            _leitorCartao.writeFile("/enviardepois.txt", _msg);
+            _leitorCartao.writeFile("/enviardepois.txt", "\n");
+       }
+       else{
+            if(_leitorCartao.fileExists("/enviardepois.txt")){
+                 File file =  _leitorCartao.readFile("/enviardepois.txt", true);
+
+                while (file.available())
+                {
+                    String e = file.readString();
+                    http.POST(e);
+                }
+
+                _leitorCartao.delet("/enviardepois.txt");
+            }
+       }
         http.end();
     }
 
-   // _energia.setDeepSleep(15 * 60);
-    delay(1000 * 60 * 10);
+    _energia.setDeepSleep(15 * 60);
+    //delay(5000);
 
 }
