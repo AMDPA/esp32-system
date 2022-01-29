@@ -27,7 +27,7 @@ void Hidrogenio::update(){
 }
 
 float Hidrogenio::getPpm(){
-    Serial.println("Hidrogenio::getPpm()");
+    //Serial.println("Hidrogenio::getPpm()");
     Serial.println("Hidrogenio::getPpm()->VALUE: " + String(ppm));
     return ppm;
 }

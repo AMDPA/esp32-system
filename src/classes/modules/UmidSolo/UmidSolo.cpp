@@ -12,7 +12,7 @@ void UmidSolo::update(){
 }
 
 int UmidSolo::getValue(){
-    Serial.println("UmidSolo::getValue()");
+    //Serial.println("UmidSolo::getValue()");
     Serial.println("UmidSolo::getValue()->VALUE: " + percent);
     return percent;
 }
