@@ -22,7 +22,7 @@ class TempSolo
     int oneWireBus = 12; //Pino GPIO onde tá conectado o DS18B20
     OneWire oneWire; //Instancia OneWire
     DallasTemperature sensors; //Informando referencia ao DallasTemperature
-    float temperatura;
+    float temperatura = 0;
 
     public:
     void init();

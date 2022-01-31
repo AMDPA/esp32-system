@@ -20,8 +20,8 @@ class Cjmcu
 {
 
 private:
-    uint16_t eco2;
-    uint16_t etvoc;
+    uint16_t eco2 = 0;
+    uint16_t etvoc = 0;
     Adafruit_CCS811 ccs;
 
 

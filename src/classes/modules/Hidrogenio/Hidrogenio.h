@@ -28,7 +28,7 @@ class Hidrogenio
 private: 
     MQUnifiedsensor MQ8;
     uint8_t pin = 35;
-    float ppm;
+    float ppm = 0;
 
 public:
     void init();

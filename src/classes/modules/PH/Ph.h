@@ -21,8 +21,8 @@ class Ph
 private:
   int pHSense = 32;
   int samples = 10;
-  int pH_Value;
-  float voltage;
+  int pH_Value = 0;
+  float voltage = 0;
 
 public:
   void init();

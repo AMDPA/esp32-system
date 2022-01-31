@@ -9,6 +9,7 @@
 #include "classes/modules/UmidSolo/UmidSolo.h"
 #include "classes/modules/LeitorCartao/LeitorCartao.h"
 #include "classes/modules/PH/Ph.h"
+#include "classes/modules/TempSolo/TempSolo.h"
 
 #include "classes/system/Hora.h"
 #include "classes/system/Server.h"
@@ -23,6 +24,7 @@ TempUmidAr _tempUmidAr;
 UmidSolo _umidSolo;
 Chuva _chuva;
 Ph _ph;
+TempSolo _tempSolo;
 
 Hora _hora;
 JsonESP32 _json;
@@ -42,29 +44,30 @@ void setup(){
 
     if(_server.mode){
         _server.init();
-        //_hora.updateHoraRede(); COmo a hora vem do disposito e a estação se mantem conectada... desencessario a atualizaçõ
+        _hora.updateHoraRede();
     }
 
     _leitorCartao.initSD();
-    //_cjmcu.init();
-    //_hidrogenio.init();
-   // _luminosidade.init();
-    //_tempUmidAr.init();
-    //_umidSolo.init();
-   // _chuva.init();
-   //_ph.init();
+    _cjmcu.init();
+    _hidrogenio.init();
+    _luminosidade.init();
+    _tempUmidAr.init();
+    _umidSolo.init();
+    _chuva.init();
+    _ph.init();
+    _tempSolo.init();
 }
 
 void loop(){
     _server.finish();
 
-    //_cjmcu.update();
-    //_hidrogenio.update();
-    //_luminosidade.update();
-    //_tempUmidAr.update();
-    //_umidSolo.update();
-    //_chuva.update();
-    //_ph.update();
+    _cjmcu.update();
+    _hidrogenio.update();
+    _luminosidade.update();
+    _tempUmidAr.update();
+    _umidSolo.update();
+    _chuva.update();
+    _ph.update();
 
     if(!_leitorCartao.fileExists("/" + _hora.getData() + ".json")){
         _leitorCartao.createFile("/" + _hora.getData() + ".json");
@@ -83,9 +86,9 @@ void loop(){
     ssss["ccs811_etvoc"] = _cjmcu.getEtvoc();
     ssss["mq8_hidrogenio"] = _hidrogenio.getPpm();
     ssss["mhrd_chuva"] = _chuva.getStatus();
-    ssss["a18b20_temperatura"] = 0.0;
+    ssss["a18b20_temperatura"] = _tempSolo.getTemperatura();
     ssss["ph4502c_ph"] = _ph.getPh();
-    ssss["mhz19b_co2"] = 0.0;
+    ssss["mhz19b_co2"] = _cjmcu.getEco2();
 
     String msg = _leitorCartao.readFile("/" + _hora.getData() + ".json");
     String msg2;
@@ -105,14 +108,16 @@ void loop(){
     }
 
     _leitorCartao.writeFile("/" + _hora.getData() + ".json", msg2, true);
-
     if(_server.mode){
         String _msg;
         serializeJson(doc1, _msg);
         _server.init();
 
-        HTTPClient http;
+/*
+ADICIONAR SSL
+*/
 
+        HTTPClient http;
         http.begin("https://api-amacpa.herokuapp.com/");
 
         http.addHeader("Content-Type", "application/json");
@@ -120,7 +125,8 @@ void loop(){
         http.addHeader("Estacao", String(_server.id_esta));
 
         int code = http.POST(_msg);
-
+        Serial.println(code);
+        Serial.println(http.getString());
        if(code != 201){
            if(!_leitorCartao.fileExists("/enviardepois.txt")){
                 _leitorCartao.createFile("/enviardepois.txt");

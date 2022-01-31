@@ -20,8 +20,8 @@ class Luminosidade
 {
 private: 
     uint8_t pin = 26;
-    int value;
-    float percent;
+    int value = 0;
+    float percent  = 0;
 
 public:
     int getValue();

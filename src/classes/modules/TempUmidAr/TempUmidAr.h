@@ -17,9 +17,9 @@ class TempUmidAr
    
 private:
     DHTesp dht;
-    float humidity;
-    float temperature;
-    float heatIndex;
+    float humidity = 0;
+    float temperature = 0;
+    float heatIndex = 0;
     
 public:
     void init();

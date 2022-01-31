@@ -23,7 +23,7 @@ private:
     bool active;
     int analogico;
     int digital;
-    String status;
+    String status = "";
 
 public:
     void init();
